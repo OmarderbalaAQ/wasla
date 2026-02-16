@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - Wasla</title>
+    <!-- i18n Preload: Hide content until translations load (prevents FOUC) -->
+    <script src="js/i18n-preload.js"></script>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Contact Form Message Styles */
+        .form-message {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-message.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .form-message.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .form-message .message-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .form-message .message-icon {
+            font-size: 20px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .form-message.success .message-icon {
+            color: #28a745;
+        }
+
+        .form-message.error .message-icon {
+            color: #dc3545;
+        }
+
+        .form-message .message-text {
+            flex: 1;
+        }
+
+        .form-message ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .form-message li {
+            margin: 4px 0;
+        }
+
+        /* RTL Support for Arabic */
+        .form-message.rtl-text .message-content {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .form-message.rtl-text ul {
+            padding-left: 0;
+            padding-right: 20px;
+            text-align: right;
+        }
+
+        .form-message.rtl-text li {
+            text-align: right;
+        }
+
+        /* Email Warning Animation */
+        .email-warning {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            color: #856404;
+            font-size: 13px;
+            margin-top: 8px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease-out;
+        }
+
+        .email-warning.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .email-warning .warning-icon {
+            font-size: 16px;
+        }
+
+        .input-error {
+            border-color: #ffc107 !important;
+            background-color: #fffbf0 !important;
+        }
+
+        .input-error:focus {
+            border-color: #ff9800 !important;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1) !important;
+        }
+    </style>
+    <script src="js/i18n.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/page-translator.js"></script>
+    <script src="js/dynamic-content-i18n.js"></script>
+    <script src="js/contact-form.js"></script>
+</head>
+<body>
+
+    
+    <header class="main-header">
+        <div class="nav-container">
+            <div class="logo">
+                
+                 <a  href="index.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="elements\Adobe Express - word_dot.png" 
+                     alt="WASLA logo"  
+                     style="height: clamp(26px, 4.5vw, 42px); 
+                            width: auto; 
+                            max-width: 100%;
+                            margin-top: 4px;">
+                
+            </a>
+            </div>
+
+            <nav class="nav-links">
+                <a href="index.html" data-i18n="navigation.home">Home</a>
+                <a href="pricing-non registered.html" data-i18n="navigation.pricing">Pricing</a>
+                <a href="solutions.html" data-i18n="navigation.solutions">Solutions</a>
+                 <a href="FAQ.html" data-i18n="navigation.faq">FAQ</a>
+            </nav>
+
+            <div class="nav-actions">
+                
+                <div class="lang-dropdown-wrapper">
+        <div class="lang-selector">
+            <span class="globe-icon">🌐</span> EN
+        </div>
+        <ul class="lang-list">
+            <li><a href="#" data-i18n="common.englishOption" data-i18n-prefix="🇺🇸 ">English</a></li>
+            <li><a href="#" data-i18n="common.arabicOption" data-i18n-prefix="🇸🇦 ">Arabic</a></li>
+        </ul>
+                </div>
+                <a href="login.html" class="btn btn-outline" data-i18n="common.login">Log in</a>
+                <a href="form.html" class="btn btn-primary" data-i18n="common.getStarted">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="demo-section">
+        <div class="container demo-layout">
+            
+            <div class="demo-form-column">
+                <div class="form-pattern-wrapper">
+                    <div class="form-card">
+                        <form action="#" id="contactForm">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label data-i18n="form.formFields.firstName">First name*</label>
+                                    <input type="text" data-field="first_name" data-i18n-placeholder="form.formFields.firstNamePlaceholder" placeholder="First name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="form.formFields.lastName">Last name*</label>
+                                    <input type="text" data-field="last_name" data-i18n-placeholder="form.formFields.lastNamePlaceholder" placeholder="Last name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label data-i18n="form.formFields.email">Email*</label>
+                                    <input type="email" data-field="email" data-i18n-placeholder="form.formFields.emailPlaceholder" placeholder="Email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="form.formFields.phone">Phone number*</label>
+                                    <div class="phone-input-group">
+                                        <select class="country-code" data-field="country_code">
+                                            <option value="+966">🇸🇦 +966</option>
+                                            <option value="+20">🇪🇬 +20</option>
+                                            <option value="+971">🇦🇪 +971</option>
+                                            <option value="+974">🇶🇦 +974</option>
+                                            <option value="+1">🇺🇸 +1</option>
+                                            <option value="+44">🇬🇧 +44</option>
+                                        </select>
+                                        <input type="tel" data-field="phone" data-i18n-placeholder="form.formFields.phonePlaceholder" placeholder="123 456 789">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label data-i18n="form.formFields.country">Country*</label>
+                                    <select data-field="country" required>
+                                        <option value="KSA" data-i18n="form.formFields.countryOptions.ksa">Saudi Arabia</option>
+                                        <option value="UAE" data-i18n="form.formFields.countryOptions.uae">UAE</option>
+                                        <option value="Egypt" data-i18n="form.formFields.countryOptions.egypt">Egypt</option>
+                                        <option value="Qatar" data-i18n="form.formFields.countryOptions.qatar">Qatar</option>
+                                        <option value="Other" data-i18n="form.formFields.countryOptions.other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="form.formFields.businessName">Restaurant/Business Name*</label>
+                                    <input type="text" data-field="business_name" data-i18n-placeholder="form.formFields.businessNamePlaceholder" placeholder="Restaurant name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label data-i18n="form.formFields.locations">Number of Locations*</label>
+                                <div class="location-selector">
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" data-field="num_locations" value="1" checked>
+                                        <span>1</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" data-field="num_locations" value="2-5">
+                                        <span>2-5</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" data-field="num_locations" value="6-10">
+                                        <span>6-10</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" data-field="num_locations" value="11-25">
+                                        <span>11-25</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" data-field="num_locations" value="25-50">
+                                        <span>25-50</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" data-field="num_locations" value="+50">
+                                        <span>+50</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label data-i18n="form.formFields.hearAbout">How did you hear about us?*</label>
+                                <select data-field="referral_source" required>
+                                    <option value="" disabled selected data-i18n="form.formFields.hearAboutPlaceholder">How did you hear about us?</option>
+                                    <option value="social" data-i18n="form.formFields.hearAboutOptions.social">Social Media</option>
+                                    <option value="search" data-i18n="form.formFields.hearAboutOptions.search">Search Engine</option>
+                                    <option value="referral" data-i18n="form.formFields.hearAboutOptions.referral">Friend/Colleague</option>
+                                    <option value="other" data-i18n="form.formFields.hearAboutOptions.other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="marketing" name="marketing">
+                                <label for="marketing" data-i18n="form.formFields.marketing">Yes, I'd like to receive marketing emails from Wasla. I understand that I can unsubscribe from these communications at any time.</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="privacy" name="privacy" required>
+                                <label for="privacy" data-i18n="form.formFields.privacy">By submitting this form, you agree to the processing of your personal data by Wasla in accordance with our <strong>privacy policy</strong>. *</label>
+                            </div>
+
+                            <button type="submit" class="btn-submit-form" data-i18n="form.buttons.submit">Get started</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-content-column">
+                <h1 class="demo-headline" data-i18n="form.heading">FUTURE-PROOF YOUR DELIVERY PERFORMANCE WITH WASLA</h1>
+                <p class="demo-desc" data-i18n="form.description">
+                    Book a 30-minute strategy call with a Wasla expert who understands the real challenges 
+                    of scaling on delivery platforms. Our end-to-end delivery performance management service 
+                    is designed to increase orders, protect margins, and standardize results across every branch.
+                    We work alongside you to turn delivery into a predictable growth channel.
+                </p>
+                <p class="demo-sub-desc">
+                    <strong data-i18n="form.subDescription">Join the growing 100+ brands already partnering with Wasla to drive measurable results on delivery platforms.</strong>
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - Deliverect</title>
+    <link rel="stylesheet" href="dd.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="C:\Users\Omar Derb\Downloads\New folder (7)\site\elements\Adobe Express - word_dot.png" 
+                     alt="Deliverect logo"  
+                     style="height: clamp(26px, 4.5vw, 42px); 
+                            width: auto; 
+                            max-width: 100%;
+                            margin-top: 4px;">
+                
+            </a>
+            </div>
+            <nav class="nav-links">
+                <a href="#">Solutions <span>⌄</span></a>
+                <a href="#">Integrations <span>⌄</span></a>
+                <a href="#">Pricing</a>
+                <a href="#">Resources <span>⌄</span></a>
+            </nav>
+            <div class="nav-actions">
+                <div class="lang-selector">
+                    <span class="globe-icon">🌐</span>
+                    <select id="languageSelect" style="border: none; background: transparent; font-weight: 600; cursor: pointer; outline: none;">
+                        <option value="en">EN</option>
+                        <option value="ar">🇸🇦 AR</option>
+                    </select>
+                </div>
+                <button class="btn btn-outline">Log in</button>
+                <button class="btn btn-primary">Get Started</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="demo-section">
+        <div class="container demo-layout">
+            
+            <div class="demo-form-column">
+                <div class="form-pattern-wrapper">
+                    <div class="form-card">
+                        <form action="#">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First name*</label>
+                                    <input type="text" placeholder="First name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last name*</label>
+                                    <input type="text" placeholder="Last name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email*</label>
+                                    <input type="email" placeholder="Email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone number*</label>
+                                    <div class="phone-input-group">
+                                        <select class="country-code">
+                                            <option>🇪🇬 +20</option>
+                                            <option>🇺🇸 +1</option>
+                                            <option>🇬🇧 +44</option>
+                                        </select>
+                                        <input type="tel" placeholder="123 456 789">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Country*</label>
+                                    <select required>
+                                        <option value="Egypt">Egypt</option>
+                                        <option value="UAE">UAE</option>
+                                        <option value="KSA">Saudi Arabia</option>
+                                        <option value="USA">USA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Restaurant *</label>
+                                    <input type="text" placeholder="RestauranT " required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Number of Locations*</label>
+                                <div class="location-selector">
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" value="1">
+                                        <span>1</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" value="2-5">
+                                        <span>2-5</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" value="6-10">
+                                        <span>6-10</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" value="11-25">
+                                        <span>11-25</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" value="25-50">
+                                        <span>25-50</span>
+                                    </label>
+                                    <label class="radio-pill">
+                                        <input type="radio" name="locations" value="+50">
+                                        <span>+50</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>How did you hear about us?*</label>
+                                <select required>
+                                    <option value="" disabled selected>How did you hear about us?</option>
+                                    <option value="social">Social Media</option>
+                                    <option value="search">Search Engine</option>
+                                    <option value="referral">Friend/Colleague</option>
+                                </select>
+                            </div>
+
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="marketing" name="marketing">
+                                <label for="marketing">Yes, I'd like to receive marketing emails from Deliverect NV. I understand that I can unsubscribe from these communications at any time. Deliverect processes my personal data as described in its Privacy Policy.</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="privacy" name="privacy" required>
+                                <label for="privacy">By submitting this form, you agree to the processing of your personal data by Deliverect in accordance with our <strong>privacy policy</strong>. *</label>
+                            </div>
+
+                            <button type="submit" class="btn-submit-form">Get started</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-content-column">
+                <h1 class="demo-headline">FUTURE-PROOF YOUR DELIVERY PERFORMANCE WITH WASLA</h1>
+                <p class="demo-desc">
+                    Book a 30-minute strategy call with a Wasla expert who understands the real challenges 
+                    of scaling on delivery platforms. Our end-to-end delivery performance management service 
+                    is designed to increase orders, protect margins, and standardize results across every branch.
+                     We work alongside you to turn delivery into a predictable growth channel.
+                </p>
+                <p class="demo-sub-desc">
+                    <strong>Join the growing 100+  brands already partnering with Wasla to drive measurable results on delivery platforms.</strong>
+                </p>
+
+                <div class="demo-logos-grid">
+                    <!-- empty right now -->
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

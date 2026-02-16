@@ -1,0 +1,24 @@
+  <div class="card-icon-wrapper">
+                       
+<svg width="46" height="72" viewBox="0 0 100 85" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .diamond-shape { fill: #7209B7; } /* Change hex code here for different shades */
+  </style>
+
+  <polygon class="diamond-shape" points="0,35 32,35 16,0" />
+  
+  <polygon class="diamond-shape" points="19,0 47,0 33,35" />
+  
+  <polygon class="diamond-shape" points="36,35 64,35 50,0" />
+  
+  <polygon class="diamond-shape" points="53,0 81,0 67,35" />
+  
+  <polygon class="diamond-shape" points="68,35 100,35 84,0" />
+
+  <polygon class="diamond-shape" points="0,37 33,37 47,85" />
+  
+  <polygon class="diamond-shape" points="36,37 64,37 50,85" />
+  
+  <polygon class="diamond-shape" points="67,37 100,37 53,85" />
+</svg>
+                    </div>

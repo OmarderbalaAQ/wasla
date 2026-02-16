@@ -1,0 +1,599 @@
+{
+  "common": {
+    "logo": "Wasla",
+    "language": "EN",
+    "languageArabic": "AR",
+    "logout": "Log out",
+    "login": "Log in",
+    "getStarted": "Get Started",
+    "home": "Home",
+    "pricing": "Pricing",
+    "solutions": "Solutions",
+    "faq": "FAQ",
+    "dashboard": "Dashboard",
+    "myPlans": "My Plans",
+    "copyright": "Copyright 2025 Wasla. All rights reserved.",
+    "termsOfService": "Terms of service",
+    "privacyPolicy": "Privacy Policy",
+    "aboutUs": "About us",
+    "contactUs": "Contact us",
+    "helpCenter": "Help Center",
+    "englishOption": "English",
+    "arabicOption": "Arabic",
+    "includes": "Includes:"
+  },
+  "errors": {
+    "rateLimitExceeded": "Too many requests. Please wait before trying again.",
+    "tooManyLoginAttempts": "Too many login attempts. Please wait 1 minute before trying again.",
+    "tooManyRegistrationAttempts": "Too many registration attempts. Please wait 1 minute before trying again.",
+    "tooManyPaymentAttempts": "Too many payment attempts. Please wait 1 minute before trying again.",
+    "loginAttemptsExceeded": "You have exceeded the maximum number of login attempts (5 per minute). Please wait 1 minute and try again.",
+    "registrationAttemptsExceeded": "You have exceeded the maximum number of registration attempts (5 per minute). Please wait 1 minute and try again.",
+    "paymentAttemptsExceeded": "You have exceeded the maximum number of payment attempts (10 per minute). Please wait 1 minute and try again.",
+    "rateLimitInfo": "For security reasons, we limit the number of attempts per minute.",
+    "contactSupportIfIssue": "If you continue to experience issues, please contact our support team.",
+    "waitAndRetry": "Please wait {minutes} minute(s) and try again.",
+    "attemptsRemaining": "You have {attempts} attempts remaining.",
+    "rateLimitReset": "Rate limit will reset in {seconds} seconds."
+  },
+  "navigation": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "solutions": "Solutions",
+    "faq": "FAQ",
+    "login": "Log in",
+    "getStarted": "Get Started",
+    "myPlans": "My Plans"
+  },
+  "footer": {
+    "resources": "Resources",
+    "solutions": "Solutions",
+    "integrations": "Integrations",
+    "waslaFor": "Wasla for",
+    "restaurants": "Restaurants",
+    "retail": "Retail",
+    "enterprise": "Enterprise",
+    "allIntegrations": "All integrations",
+    "posSystems": "POS systems",
+    "deliveryPlatforms": "Delivery platforms",
+    "onlineOrdering": "Online ordering",
+    "loyalty": "Loyalty",
+    "becomePartner": "Become a partner",
+    "aboutUs": "About us",
+    "careers": "Careers",
+    "contactUs": "Contact us",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "customerStories": "Customer stories",
+    "newsletter": "Sign up for our newsletter",
+    "sentinel": "Sentinel",
+    "deliveryManager": "Delivery Manager",
+    "app": "App",
+    "direct": "Direct",
+    "dispatch": "Dispatch",
+    "kiosk": "Kiosk",
+    "tableOrdering": "Table Ordering",
+    "questApp": "Quest App",
+    "product": "Product",
+    "support": "Support",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "helpCenter": "Help Center"
+  },
+  "pricingFeatures": {
+    "deliveryAppManagement": "🚚 Delivery App Management",
+    "weeklyReports": "📈 Weekly Performance Reports",
+    "monthlyReports": "📈 Monthly Performance Reports",
+    "menuUpdatesWeekly": "🍽️ Menu Updates in App Weekly",
+    "menuUpdatesMonthly": "🍽️ Menu Updates in App Monthly",
+    "technicalSupport": "🛠️ Technical Support During Work Hours",
+    "sponsoredAds": "📢 Sponsored Ads & Advanced Marketing",
+    "businessAnalytics": "📊 Business Analytics & Profit Strategy Optimization",
+    "commissionNegotiation": "💰 Commission Negotiation with Apps",
+    "customizedConsultations": "👥 Customized Consultations",
+    "continuousMenuUpdates": "🔄 Continuous Menu Updates Across All Categories",
+    "menuDesignMonthly": "🎨 Menu Design - Monthly Adjustments",
+    "menuDesignOnce": "🎨 Menu Design - Once at subscription start",
+    "basicMarketing": "📝 Basic Marketing Plan",
+    "basicAnalyticsDashboard": "📊 Basic Analytics Dashboard",
+    "monthlyPerformanceReports": "📈 Monthly Performance Reports",
+    "emailSupport": "💬 Email Support",
+    "secureDataStorage": "🔒 Secure Data Storage",
+    "advancedAnalyticsDashboard": "📊 Advanced Analytics Dashboard",
+    "weeklyPerformanceReports": "📈 Weekly Performance Reports",
+    "customInsights": "📣 Custom Insights & Recommendations",
+    "priorityEmailSupport": "⚡ Priority Email Support",
+    "enhancedDataSecurity": "🔒 Enhanced Data Security",
+    "mobileAppAccess": "📱 Mobile App Access",
+    "premiumAnalyticsDashboard": "📊 Premium Analytics Dashboard",
+    "dailyPerformanceReports": "📈 Daily Performance Reports",
+    "aiPoweredInsights": "📣 AI-Powered Insights",
+    "dedicatedAccountManager": "🤝 Dedicated Account Manager",
+    "prioritySupport24x7": "⚡ 24/7 Priority Support",
+    "enterpriseGradeSecurity": "🔒 Enterprise-Grade Security",
+    "mobileApiAccess": "📱 Mobile & API Access",
+    "customBrandingOptions": "🎨 Custom Branding Options"
+  },
+  "dashboard": {
+    "pageTitle": "Subscription Plans - Simple Auth Payments",
+    "title": "Subscription Plans - Simple Auth Payments",
+    "header": {
+      "plans": "Plans",
+      "solutions": "Solutions",
+      "faq": "FAQ"
+    },
+    "pricing": {
+      "label": "Plans & Pricing",
+      "title": "Choose Your Subscription Plan",
+      "description": "Select the perfect plan for your business needs. All plans include access to your personalized analytics dashboard.",
+      "discountBanner": "Multi-Month Discounts Available!",
+      "loadingDiscounts": "Loading discount options..."
+    },
+    "modal": {
+      "title": "Subscribe to",
+      "basePrice": "Base Price:",
+      "perMonth": "/month",
+      "selectDuration": "Select Subscription Duration:",
+      "originalPrice": "Original Price:",
+      "discount": "Discount",
+      "discountPercent": "%",
+      "finalPrice": "Final Price:",
+      "cancel": "Cancel",
+      "subscribeNow": "Subscribe Now"
+    }
+  },
+    "plans": {
+      "platinum": {
+        "title": "Platinum",
+        "description": "The ultimate platform for managing multiple delivery apps",
+        "feature1": "Delivery App Management",
+        "feature2": "Weekly Performance Reports",
+        "feature3": "Menu Updates in App Weekly",
+        "feature4": "Technical Support During Work Hours",
+        "feature5": "Sponsored Ads & Advanced Marketing",
+        "feature6": "Business Analytics & Profit Strategy Optimization",
+        "feature7": "Commission Negotiation with Apps",
+        "feature8": "Customized Consultations",
+        "feature9": "Continuous Menu Updates Across All Categories"
+      },
+      "gold": {
+        "title": "Gold",
+        "description": "Boost orders and profits with analytics and social campaigns",
+        "feature1": "Delivery App Management",
+        "feature2": "Weekly Performance Reports",
+        "feature3": "Menu Updates in App Weekly",
+        "feature4": "Technical Support During Work Hours",
+        "feature5": "Sponsored Ads & Advanced Marketing",
+        "feature6": "Business Analytics & Profit Strategy Optimization",
+        "feature7": "Menu Design – Monthly Adjustments"
+      },
+      "silver": {
+        "title": "Silver",
+        "description": "The essential plan for managing your delivery apps and basic growth",
+        "feature1": "Delivery App Management",
+        "feature2": "Weekly Performance Reports",
+        "feature3": "Menu Updates in App Monthly",
+        "feature4": "Technical Support During Work Hours",
+        "feature5": "Basic Marketing Plan",
+        "feature6": "Menu Design – Once at subscription start"
+      }
+    }
+  ,
+  "clientHome": {
+    "pageTitle": "My Dashboard - Wasla",
+    "title": "My Dashboard - Wasla",
+    "welcome": "Welcome Back!",
+    "loading": "Loading...",
+    "checkingStatus": "Checking subscription status...",
+    "subscriptionStatus": {
+      "active": "Active",
+      "activeLabel": "Subscription Active",
+      "validUntil": "Valid until:",
+      "accessGranted": "Access granted by admin",
+      "plan": "Plan:",
+      "noSubscription": "No Active Subscription",
+      "subscriptionRequired": "Subscription Required",
+      "purchaseRequired": "Please purchase a plan to access your dashboard"
+    },
+    "buttons": {
+      "openDashboard": "📊 Open My Dashboard",
+      "viewPlans": "💳 View Plans & Payment"
+    },
+    "links": {
+      "logout": "Logout"
+    },
+    "errorMessages": {
+      "loadingError": "Error loading subscription status",
+      "noSubscriptionAlert": "You need an active subscription to access the dashboard.",
+      "dashboardUrlError": "Dashboard URL not configured. Please contact support."
+    },
+    "navigation": {
+      "home": "Home",
+      "myPlans": "My Plans",
+      "solutions": "Solutions",
+      "faq": "FAQ",
+    "getStarted": "Get Started"
+    }
+  },
+  "login": {
+    "pageTitle": "Login - Wasla",
+    "title": "Login - Wasla",
+    "heading": "Welcome back",
+    "subheading": "Please enter your details to sign in.",
+    "form": {
+      "email": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "forgotPassword": "Forgot password?",
+      "continue": "Continue"
+    },
+    "messages": {
+      "error": "Login failed. Please try again.",
+      "success": "Login successful! Redirecting...",
+      "networkError": "Network error. Please make sure the API server is running."
+    },
+    "overlay": {
+      "title": "Streamline your online sales.",
+      "description": "Manage all your online orders in one place and grow your business with ease."
+    },
+    "signup": "Don't have an account? Sign up"
+  },
+  "register": {
+    "pageTitle": "Register - Wasla",
+    "title": "Register - Wasla",
+    "heading": "Create an account",
+    "subheading": "Please enter your details to get started.",
+    "form": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "email": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "createAccount": "Create Account"
+    },
+    "messages": {
+      "error": "Registration failed. Please try again.",
+      "success": "Registration successful! Redirecting to login...",
+      "networkError": "Network error. Please make sure the API server is running."
+    },
+    "overlay": {
+      "title": "Start your journey today.",
+      "description": "Join us and unlock access to premium analytics and delivery management."
+    },
+    "signin": "Already have an account? Sign in"
+  },
+  "faq": {
+    "pageTitle": "Wasla - Powering Greater Growth",
+    "title": "Frequently asked questions",
+    "subtitle": "Curious about online order integrations or how our platform works? Have a look through the frequently asked questions below, or get in touch with us via our contact page.",
+    "sidebar": {
+      "title": "FAQ",
+      "subtitle": "Have more questions about Wasla?",
+      "button": "Get Started"
+    },
+    "backToHome": "Back to Home",
+    "questions": {
+      "whyWasla": {
+        "title": "Why should I choose Wasla?",
+        "answer": "because it directly connects operations to revenue. By fully managing delivery platforms, Wasla reduces cancellations caused by menu errors, availability issues, pricing mistakes, and delayed fulfillment protecting orders before revenue is lost. Every operational decision is tied to increasing completed orders and improving profit per order, so merchants see higher revenue, fewer failures, and consistent performance across all branches",
+        "link": "Book a 1-on-1 with our team to learn more."
+      },
+      "increaseSales": {
+        "title": "How does Wasla help increase my store's sales?",
+        "answer": "We analyze your store's performance across all delivery apps, identify opportunities to optimize your menu and pricing, and manage promotions to boost visibility and sales. Additionally, we negotiate with apps to reduce costs and maximize your net profit"
+      },
+      "suitableForAll": {
+        "title": "Are Wasla's services suitable for all types of stores?",
+        "answer": "Yes, we provide tailored solutions for restaurants, cafes, retail shops, and beauty stores. Our strategies are based on detailed data analysis to ensure each store achieves the best results on all platforms."
+      },
+      "trackPerformance": {
+        "title": "How can I track my store's performance with Wasla?",
+        "answer": "We provide weekly detailed reports for each branch, including order counts, revenue, completed and canceled orders, and average order value. All data is presented clearly to help you make quick and strategic business decisions."
+      },
+      "multiMonthDiscounts": "How do multi-month discounts work?",
+      "multiMonthAnswer": "When you purchase longer subscription periods, you automatically receive discounts. The discount is applied automatically at checkout based on the subscription length you choose.",
+      "upgradePlan": "Can I upgrade my plan later?",
+      "upgradeAnswer": "Yes! You can upgrade to a higher tier at any time. Your new subscription will start after your current subscription expires, ensuring you don't lose any paid time.",
+      "subscriptionExpires": "What happens when my subscription expires?",
+      "expiresAnswer": "When your subscription expires, you'll lose access to your analytics dashboard. However, you can renew at any time to regain access. All your data is safely stored and will be available when you resubscribe.",
+      "refunds": "Do you offer refunds?",
+      "refundsAnswer": "We offer a 7-day money-back guarantee on all new subscriptions. If you're not satisfied with our service, contact our support team within 7 days of purchase for a full refund."
+    }
+  },
+  "index": {
+    "pageTitle": "Wasla - Powering Greater Growth",
+    "title": "Wasla - Powering Greater Growth",
+    "topBar": "Schedule a demo and learn how Wasla can help you",
+    "hero": {
+      "subtitle": "End-to-end delivery management with Measurable growth",
+      "title": "Powering Greater Growth FOOD ORDERING",
+      "description": "We help restaurants scale faster and more profitably on delivery platforms. By managing and optimizing every step from multi-app presence and menu performance to pricing, commissions, and reporting Wasla ensures orders convert, fulfill, and scale efficiently. Our data-driven, platform-native approach simplifies operations across all delivery channels, giving brands full visibility, stronger margins, and consistent performance across every branch.",
+      "cta": "Get Started"
+    },
+    "logos": {
+      "title": "FUELLING THE FASTEST GROWING FOOD BUSINESSES with integrations"
+    },
+    "efficiency": {
+      "label": "END-TO-END DELIVERY PERFORMANCE",
+      "title": "RESULTS. NOT REPORTS",
+      "description": "Wasla fully manages your presence across delivery platforms to drive measurable growth and profitability. We take complete ownership from performance optimization to platform decisions aligning every action with revenue, margin, and reliability KPIs. With one accountable partner instead of multiple vendors, brands gain control, consistency, and stronger results across every branch.",
+      "dashboardTitle": "Analytics Dashboard",
+      "dashboardSubtitle": "Real-time insights for your business"
+    },
+    "performance": {
+      "label": "HIGHER PERFORMANCE",
+      "title": "TURN VISIBILITY INTO ORDERS",
+      "description": "Increase completed orders through strategic menu optimization and data-led platform management. Wasla improves how your brand appears, prices, and performs across delivery apps, using performance data to reduce drop-offs and cancellations while driving repeat orders and sustainable growth.",
+      "metricsTitle": "Performance Metrics",
+      "metricsSubtitle": "Track and optimize your delivery success"
+    },
+    "video": {
+      "label": "PLATFORM WALKTHROUGH",
+      "title": "SEE WASLA IN ACTION",
+      "description": "Watch a quick overview of Wasla to see how restaurants and food service brands use our delivery performance management services to streamline operations, improve profitability, and scale across delivery platforms with confidence"
+    }
+  },
+  "solutions": {
+    "pageTitle": "Wasla - Powering Greater Growth",
+    "title": "Wasla - Powering Greater Growth",
+    "hero": {
+      "title": "Simplify your digital operations with flexibility and full oversight",
+      "subtitle": "Automate order processing, centralize menu management, and control your digital operations across every channel reliably, globally, and in real time."
+    },
+    "stats": {
+      "revenueIncrease": "25%",
+      "revenueIncreaseLabel": "AVG REVENUE INCREASE",
+      "errorReduction": "80%",
+      "errorReductionLabel": "ERROR REDUCTION",
+      "costReduction": "25%",
+      "costReductionLabel": "EMPLOYEE COST REDUCTION"
+    },
+    "why": {
+      "title": "WHY",
+      "orderManagement": {
+        "title": "Order Management",
+        "accent": "Every order. Every time.",
+        "description": "Send orders straight to your POS with live status syncing. No manual work, no missed orders, no blind spots."
+      },
+      "menuManagement": {
+        "title": "Menu, Store & Stock Management",
+        "accent": "Manage menus easily.",
+        "description": "Push menu updates to all your channels from one place. Snooze products, sync stock, and schedule changes."
+      },
+      "dataReporting": {
+        "title": "Consolidated Data & Reporting",
+        "accent": "See what makes money.",
+        "description": "Fix what doesn't. Track revenue, cancellations, failed orders, and performance. Make decisions based on data, not guesswork."
+      },
+      "optimization": {
+        "title": "Optimize for profitability",
+        "accent": "discounted contracts & reduced costs",
+        "description": "Utilize analytics dashboards to adjust your offerings, promotions, and marketing strategies effectively."
+      }
+    },
+    "how": {
+      "title": "HOW",
+      "steps": [
+        {
+          "number": "1",
+          "accent": "single control center.",
+          "text": "ALL delivery channels in one dashboard"
+        },
+        {
+          "number": "2",
+          "accent": "Actionable performance reports.",
+          "text": "clear insights that turn data into executive decisions."
+        },
+        {
+          "number": "3",
+          "accent": "Menu and pricing optimization.",
+          "text": "menu structuring and pricing to increase conversion rates and maximize ROI."
+        },
+        {
+          "number": "4",
+          "accent": "Smarter promotions.",
+          "text": "Boost visibility and order volume without sacrificing profit margins"
+        },
+        {
+          "number": "5",
+          "accent": "Fewer operational errors, lower costs.",
+          "text": "Reduce cancellations and inefficiencies."
+        },
+        {
+          "number": "6",
+          "accent": "One service to run it all",
+          "text": "Wasla becomes the digital command center for your restaurant operations."
+        }
+      ]
+    },
+    "whoFor": {
+      "title": "WHO IS THIS SOLUTION FOR",
+      "enterprise": {
+        "title": "Enterprise Restaurant Brands",
+        "description": "Run ops across 52+ countries with 99.9% uptime and custom integrations. Handle complexity without slowdowns; boost efficiency, cut risks, and drive enterprise-level profits."
+      },
+      "cloudKitchens": {
+        "title": "cloud Kitchens",
+        "description": "Streamline multi-channel ops without extra hassle, and optimize for high-speed delivery."
+      },
+      "multiLocation": {
+        "title": "Multi-location chains",
+        "description": "Update menus, opening hours, and reports across all sites in seconds, while keeping branding consistent."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Get Started - Wasla",
+    "header": {
+      "label": "Plans & Pricing",
+      "title": "Find the perfect solution for your business needs",
+      "description": "Whether managing restaurants, managing fleets, or selling directly, we have a solution tailored for you."
+    },
+    "plans": {
+      "platinum": {
+        "title": "Platinum",
+        "description": "The ultimate platform for managing multiple delivery apps",
+        "priceLabel": "From",
+        "price": "1000 SAR",
+        "period": "/ month",
+        "cta": "Get a Quote",
+        "features": [
+          "Delivery App Management",
+          "Weekly Performance Reports",
+          "Menu Updates in App Weekly",
+          "Technical Support During Work Hours",
+          "Sponsored Ads & Advanced Marketing",
+          "Business Analytics & Profit Strategy Optimization",
+          "Commission Negotiation with Apps",
+          "Customized Consultations",
+          "Continuous Menu Updates Across All Categories"
+        ]
+      },
+      "gold": {
+        "title": "Gold",
+        "description": "Boost orders and profits with analytics and social campaigns",
+        "priceLabel": "From",
+        "price": "850 SAR",
+        "period": "/ month",
+        "cta": "Get a Quote",
+        "features": [
+          "Delivery App Management",
+          "Weekly Performance Reports",
+          "Menu Updates in App Weekly",
+          "Technical Support During Work Hours",
+          "Sponsored Ads & Advanced Marketing",
+          "Business Analytics & Profit Strategy Optimization",
+          "Menu Design - Monthly Adjustments"
+        ]
+      },
+      "silver": {
+        "title": "Silver",
+        "description": "The essential plan for managing your delivery apps and basic growth",
+        "priceLabel": "From",
+        "price": "550 SAR",
+        "period": "/ month",
+        "cta": "Get a Quote",
+        "features": [
+          "Delivery App Management",
+          "Weekly Performance Reports",
+          "Menu Updates in App Monthly",
+          "Technical Support During Work Hours",
+          "Basic Marketing Plan",
+          "Menu Design - Once at subscription start"
+        ]
+      }
+    }
+  },
+  "form": {
+    "pageTitle": "Get Started - Wasla",
+    "title": "Get Started - Wasla",
+    "heading": "FUTURE-PROOF YOUR DELIVERY PERFORMANCE WITH WASLA",
+    "description": "Book a 30-minute strategy call with a Wasla expert who understands the real challenges of scaling on delivery platforms. Our end-to-end delivery performance management service is designed to increase orders, protect margins, and standardize results across every branch. We work alongside you to turn delivery into a predictable growth channel.",
+    "subDescription": "Join the growing 100+ brands already partnering with Wasla to drive measurable results on delivery platforms.",
+    "formFields": {
+      "firstName": "First name",
+      "firstNamePlaceholder": "First name",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Last name",
+      "email": "Email",
+      "emailPlaceholder": "Email",
+      "phone": "Phone number",
+      "phonePlaceholder": "123 456 789",
+      "country": "Country",
+      "countryOptions": {
+        "ksa": "Saudi Arabia",
+        "uae": "UAE",
+        "egypt": "Egypt",
+        "qatar": "Qatar",
+        "other": "Other"
+      },
+      "businessName": "Restaurant/Business Name",
+      "businessNamePlaceholder": "Restaurant name",
+      "locations": "Number of Locations",
+      "locationOptions": {
+        "one": "1",
+        "twoToFive": "2-5",
+        "sixToTen": "6-10",
+        "elevenToTwentyFive": "11-25",
+        "twentyFiveToFifty": "25-50",
+        "fiftyPlus": "+50"
+      },
+      "hearAbout": "How did you hear about us?",
+      "hearAboutPlaceholder": "How did you hear about us?",
+      "hearAboutOptions": {
+        "social": "Social Media",
+        "search": "Search Engine",
+        "referral": "Friend/Colleague",
+        "other": "Other"
+      },
+      "marketing": "Yes, I'd like to receive marketing emails from Wasla. I understand that I can unsubscribe from these communications at any time.",
+      "privacy": "By submitting this form, you agree to the processing of your personal data by Wasla in accordance with our privacy policy.",
+      "privacyLink": "privacy policy",
+      "required": "*"
+    },
+    "buttons": {
+      "submit": "Get started",
+      "submitting": "Submitting..."
+    },
+    "messages": {
+      "success": "Thank you for your interest! Our team will contact you shortly.",
+      "errorTitle": "Please correct the following errors:",
+      "networkError": "Network error. Please check your connection and try again.",
+      "rateLimitError": "You can only submit the contact form 3 times per 5 minutes. Please try again later."
+    },
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "firstNameTooLong": "First name must be less than 255 characters",
+      "lastNameRequired": "Last name is required",
+      "lastNameTooLong": "Last name must be less than 255 characters",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "emailEnglishOnly": "Email must contain only English characters",
+      "emailTooLong": "Email must be less than 255 characters",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Phone number can only contain digits, spaces, dashes, and parentheses",
+      "phoneTooLong": "Phone number must be less than 20 characters",
+      "countryCodeRequired": "Country code is required",
+      "countryRequired": "Country is required",
+      "businessNameRequired": "Restaurant/Business name is required",
+      "businessNameTooLong": "Business name must be less than 255 characters",
+      "locationsRequired": "Number of locations is required",
+      "hearAboutRequired": "Please tell us how you heard about us"
+    },
+    "countryCodes": {
+      "ksa": "+966",
+      "egypt": "+20",
+      "uae": "+971",
+      "usa": "+1",
+      "uk": "+44"
+    }
+  },
+  "admin": {
+    "messages": {
+      "accessDenied": "Access denied. Admin privileges required.",
+      "loadingError": "Error loading admin data.",
+      "discountNotFound": "Discount rule not found",
+      "errorLoadingDiscounts": "Error loading discount rules"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "totalSubscriptions": "Total Subscriptions",
+      "totalRevenue": "Total Revenue"
+    },
+    "tables": {
+      "users": "Users",
+      "subscriptions": "Subscriptions", 
+      "dashboards": "Dashboards",
+      "payments": "Payments",
+      "bundles": "Bundles",
+      "discounts": "Discount Rules"
+    },
+    "modal": {
+      "createDiscount": "Create New Discount Rule",
+      "editDiscount": "Edit Discount Rule"
+    }
+  }
+}

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #2E4275;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 66, 117, 0.15);
+        }
+        .stat-card h3 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #2E4275;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            border: 1px solid #f0f0f0;
+        }
+        .section h2 {
+            margin-bottom: 20px;
+            color: #000;
+            font-weight: 900;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #2E4275;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-small:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        .btn-primary {
+            background: #2E4275;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #324c8f;
+        }
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            color: #2E4275;
+            border-bottom-color: #2E4275;
+        }
+        .tab:hover {
+            color: #2E4275;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="admin.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                    <img src="site/elements/Adobe Express - word_dot.png" 
+                         alt="Logo"  
+                         style="height: clamp(26px, 4.5vw, 42px); 
+                                width: auto; 
+                                max-width: 100%;
+                                margin-top: 4px;">
+                </a>
+            </div>
+
+            <nav class="nav-links">
+                <a href="admin.html">Admin Dashboard</a>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="lang-selector">
+                    <span class="globe-icon">🌐</span>
+                    <select id="languageSelect" style="border: none; background: transparent; font-weight: 600; cursor: pointer; outline: none;">
+                        <option value="en">EN</option>
+                        <option value="ar">🇸🇦 AR</option>
+                    </select>
+                </div>
+                <span id="adminEmail" style="margin-right: 15px; font-weight: 500;"></span>
+                <button class="btn btn-outline" onclick="logout()">Log out</button>
+            </div>
+        </div>
+    </header>
+
+        <div class="admin-container">
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats will be loaded here -->
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('users')">Users</div>
+                <div class="tab" onclick="switchTab('subscriptions')">Subscriptions</div>
+                <div class="tab" onclick="switchTab('dashboards')">Dashboards</div>
+                <div class="tab" onclick="switchTab('payments')">Payments</div>
+                <div class="tab" onclick="switchTab('bundles')">Bundles</div>
+            </div>
+
+            <div id="users-tab" class="tab-content active">
+                <div class="section">
+                    <h2>User Management</h2>
+                    <button onclick="showCreateUser()" class="btn-primary" style="margin-bottom: 16px;">Create New User</button>
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Full Name</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="subscriptions-tab" class="tab-content">
+                <div class="section">
+                    <h2>Active Subscriptions</h2>
+                    <table id="subscriptionsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Email</th>
+                                <th>Plan</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Days Left</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="dashboards-tab" class="tab-content">
+                <div class="section">
+                    <h2>Client Dashboards</h2>
+                    <button onclick="showCreateDashboard()" class="btn-primary" style="margin-bottom: 16px;">Create/Update Dashboard</button>
+                    <table id="dashboardsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Email</th>
+                                <th>Looker Studio URL</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="payments-tab" class="tab-content">
+                <div class="section">
+                    <h2>Payment History</h2>
+                    <table id="paymentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Bundle</th>
+                                <th>Amount</th>
+                                <th>Months</th>
+                                <th>Discount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="bundles-tab" class="tab-content">
+                <div class="section">
+                    <h2>Bundle Management</h2>
+                    <button onclick="showCreateBundle()" class="btn-primary" style="margin-bottom: 16px;">Create New Bundle</button>
+                    <table id="bundlesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Currency</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        const token = localStorage.getItem('access_token');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        let currentTab = 'users';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        async function fetchAdminData() {
+            try {
+                // First try to access admin stats to check if user is admin
+                const statsResponse = await fetch(`${API_BASE_URL}/admin/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (statsResponse.status === 403) {
+                    alert('Access denied. Admin privileges required.');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                if (!statsResponse.ok) {
+                    throw new Error('Failed to fetch admin data');
+                }
+
+                const stats = await statsResponse.json();
+                
+                // Get user info for display
+                const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = await userResponse.json();
+                document.getElementById('adminEmail').textContent = user.email;
+                
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <div class="value">${stats.total_users}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Users</h3>
+                        <div class="value">${stats.active_users}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Payments</h3>
+                        <div class="value">${stats.total_payments}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Successful Payments</h3>
+                        <div class="value">${stats.successful_payments}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <div class="value">$${stats.total_revenue_usd.toFixed(2)}</div>
+                    </div>
+                `;
+
+                // Load all data
+                await loadUsers();
+                await loadSubscriptions();
+                await loadDashboards();
+                await loadPayments();
+                await loadBundles();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading admin data. Please try again.');
+            }
+        }
+
+        async function loadUsers() {
+            const response = await fetch(`${API_BASE_URL}/admin/users`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const users = await response.json();
+            
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.email}</td>
+                    <td>${user.full_name || '-'}</td>
+                    <td><span class="badge ${user.role === 'admin' ? 'badge-warning' : 'badge-success'}">${user.role}</span></td>
+                    <td><span class="badge ${user.is_active ? 'badge-success' : 'badge-danger'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="btn-small btn-warning" onclick="toggleUserRole(${user.id}, '${user.role}')">
+                            ${user.role === 'admin' ? 'Make User' : 'Make Admin'}
+                        </button>
+                        <button class="btn-small ${user.is_active ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus(${user.id}, ${!user.is_active})">
+                            ${user.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button class="btn-small btn-primary" onclick="toggleAccessOverride(${user.id}, ${user.allow_access_without_subscription || false})">
+                            ${user.allow_access_without_subscription ? '🔓 Remove Override' : '🔒 Grant Access'}
+                        </button>
+                        <button class="btn-small btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadSubscriptions() {
+            const response = await fetch(`${API_BASE_URL}/admin/subscriptions`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const subscriptions = await response.json();
+            
+            const tbody = document.querySelector('#subscriptionsTable tbody');
+            tbody.innerHTML = subscriptions.map(sub => {
+                const endDate = new Date(sub.end_date);
+                const now = new Date();
+                const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+                const isActive = sub.is_active && daysLeft > 0;
+                
+                return `
+                    <tr>
+                        <td>${sub.id}</td>
+                        <td>${sub.user_email}</td>
+                        <td>${sub.bundle_name}</td>
+                        <td>${new Date(sub.start_date).toLocaleDateString()}</td>
+                        <td>${endDate.toLocaleDateString()}</td>
+                        <td><span class="badge ${isActive ? 'badge-success' : 'badge-danger'}">${isActive ? 'Active' : 'Expired'}</span></td>
+                        <td>${isActive ? daysLeft + ' days' : '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadDashboards() {
+            const response = await fetch(`${API_BASE_URL}/admin/dashboards`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const dashboards = await response.json();
+            
+            const tbody = document.querySelector('#dashboardsTable tbody');
+            tbody.innerHTML = dashboards.map(dashboard => `
+                <tr>
+                    <td>${dashboard.id}</td>
+                    <td>${dashboard.user_email}</td>
+                    <td><a href="${dashboard.looker_studio_url}" target="_blank" style="color: #667eea; text-decoration: none;">${dashboard.looker_studio_url.substring(0, 50)}...</a></td>
+                    <td>${new Date(dashboard.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn-small btn-warning" onclick="editDashboard(${dashboard.user_id}, '${dashboard.looker_studio_url}')">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadPayments() {
+            const response = await fetch(`${API_BASE_URL}/admin/payments`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const payments = await response.json();
+            
+            const tbody = document.querySelector('#paymentsTable tbody');
+            tbody.innerHTML = payments.map(payment => `
+                <tr>
+                    <td>${payment.id}</td>
+                    <td>${payment.user_email}</td>
+                    <td>${payment.bundle_name}</td>
+                    <td>$${(payment.amount_cents / 100).toFixed(2)}</td>
+                    <td>${payment.months_purchased || 1}</td>
+                    <td>${payment.discount_percentage || 0}%</td>
+                    <td><span class="badge ${payment.status === 'succeeded' ? 'badge-success' : 'badge-warning'}">${payment.status}</span></td>
+                    <td>${new Date(payment.created_at).toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadBundles() {
+            const response = await fetch(`${API_BASE_URL}/admin/bundles`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const bundles = await response.json();
+            
+            const tbody = document.querySelector('#bundlesTable tbody');
+            tbody.innerHTML = bundles.map(bundle => `
+                <tr>
+                    <td>${bundle.id}</td>
+                    <td>${bundle.name}</td>
+                    <td>$${(bundle.price_cents / 100).toFixed(2)}</td>
+                    <td>${bundle.currency.toUpperCase()}</td>
+                    <td><span class="badge ${bundle.is_active ? 'badge-success' : 'badge-danger'}">${bundle.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="btn-small ${bundle.is_active ? 'btn-danger' : 'btn-success'}" onclick="toggleBundleStatus(${bundle.id}, ${!bundle.is_active})">
+                            ${bundle.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showCreateDashboard() {
+            const email = prompt('User email:');
+            if (!email) return;
+            
+            const url = prompt('Looker Studio URL:');
+            if (!url) return;
+            
+            createDashboard(email, url);
+        }
+
+        async function createDashboard(email, url) {
+            try {
+                // First get user ID from email
+                const usersResponse = await fetch(`${API_BASE_URL}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const users = await usersResponse.json();
+                const user = users.find(u => u.email === email);
+                
+                if (!user) {
+                    alert('User not found with email: ' + email);
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/admin/dashboards?user_id=${user.id}&looker_studio_url=${encodeURIComponent(url)}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    alert('Dashboard created/updated successfully!');
+                    await loadDashboards();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + (error.detail || 'Failed to create dashboard'));
+                }
+            } catch (error) {
+                alert('Error creating dashboard: ' + error.message);
+            }
+        }
+
+        async function editDashboard(userId, currentUrl) {
+            const newUrl = prompt('Enter new Looker Studio URL:', currentUrl);
+            if (!newUrl || newUrl === currentUrl) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/dashboards?user_id=${userId}&looker_studio_url=${encodeURIComponent(newUrl)}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    alert('Dashboard updated successfully!');
+                    await loadDashboards();
+                } else {
+                    alert('Error updating dashboard');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function toggleUserRole(userId, currentRole) {
+            const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            try {
+                await fetch(`${API_BASE_URL}/admin/users/${userId}/role?role=${newRole}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                await loadUsers();
+            } catch (error) {
+                alert('Error updating user role');
+            }
+        }
+
+        async function toggleUserStatus(userId, newStatus) {
+            try {
+                await fetch(`${API_BASE_URL}/admin/users/${userId}/status?is_active=${newStatus}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                await loadUsers();
+            } catch (error) {
+                alert('Error updating user status');
+            }
+        }
+
+        async function toggleAccessOverride(userId, currentStatus) {
+            const newStatus = !currentStatus;
+            const action = newStatus ? 'grant access without subscription' : 'remove access override';
+            
+            if (!confirm(`Are you sure you want to ${action} for this user?`)) return;
+            
+            try {
+                await fetch(`${API_BASE_URL}/admin/users/${userId}/access-override?allow_access=${newStatus}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                alert('Access override updated successfully!');
+                await loadUsers();
+            } catch (error) {
+                alert('Error updating access override');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user?')) return;
+            
+            try {
+                await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                await loadUsers();
+                await fetchAdminData(); // Refresh stats
+            } catch (error) {
+                alert('Error deleting user');
+            }
+        }
+
+        async function toggleBundleStatus(bundleId, newStatus) {
+            try {
+                await fetch(`${API_BASE_URL}/admin/bundles/${bundleId}?is_active=${newStatus}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                await loadBundles();
+            } catch (error) {
+                alert('Error updating bundle status');
+            }
+        }
+
+        function showCreateBundle() {
+            const name = prompt('Bundle name:');
+            if (!name) return;
+            
+            const price = prompt('Price in USD (e.g., 10.00):');
+            if (!price) return;
+            
+            createBundle(name, Math.round(parseFloat(price) * 100));
+        }
+
+        function showCreateUser() {
+            const email = prompt('User email:');
+            if (!email) return;
+            
+            const password = prompt('User password:');
+            if (!password) return;
+            
+            const fullName = prompt('Full name (optional):');
+            
+            const isAdmin = confirm('Make this user an admin?');
+            const role = isAdmin ? 'admin' : 'user';
+            
+            createUser(email, password, fullName, role);
+        }
+
+        async function createUser(email, password, fullName, role) {
+            try {
+                const params = new URLSearchParams({
+                    email: email,
+                    password: password,
+                    role: role
+                });
+                
+                if (fullName) {
+                    params.append('full_name', fullName);
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/admin/users/create?${params}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    alert('User created successfully!');
+                    await loadUsers();
+                    await fetchAdminData(); // Refresh stats
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + (error.detail || 'Failed to create user'));
+                }
+            } catch (error) {
+                alert('Error creating user: ' + error.message);
+            }
+        }
+
+        async function createBundle(name, priceCents) {
+            try {
+                await fetch(`${API_BASE_URL}/admin/bundles?name=${encodeURIComponent(name)}&price_cents=${priceCents}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                await loadBundles();
+                await fetchAdminData(); // Refresh stats
+            } catch (error) {
+                alert('Error creating bundle');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize
+        fetchAdminData();
+    </script>
+</body>
+</html>

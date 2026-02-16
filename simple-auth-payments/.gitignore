@@ -1,0 +1,180 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+dev.db
+test_*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.hypothesis/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Backups
+backups/
+*.bak
+*.backup
+
+# Documentation (development/testing docs - keep essential docs)
+*_SUMMARY.md
+*_COMPLETE.md
+*_FIX.md
+*_GUIDE.md
+*_NOTE.md
+*_FIXES*.md
+*_IMPLEMENTATION.md
+*_ANALYSIS.md
+*_COMPARISON.md
+*_STATUS.md
+*_REPORT.md
+*_VERIFICATION.md
+TASK_*.md
+STEP_*.md
+SESSION_SUMMARY.md
+HANDOFF_SUMMARY.md
+BEFORE_AFTER_COMPARISON.md
+I18N_*.md
+DASHBOARD_*.md
+CONTACT_FORM_*.md
+PHONE_COUNTRY_*.md
+LANGUAGE_*.md
+PERSISTENCE_*.md
+DYNAMIC_CONTENT_*.md
+INDEX_*.md
+SMOOTH_*.md
+ADMIN_*.md
+BUNDLE_*.md
+DISCOUNT_*.md
+EMAIL_*.md
+RATE_LIMITING_*.md
+SALESMAN_*.md
+STAFF_*.md
+SECURITY_*.md
+CSS_*.md
+FIXES_*.md
+FINAL_*.md
+
+# Keep essential documentation
+!README.md
+!PROJECT_ARCHITECTURE.md
+!PROJECT_OVERVIEW.md
+!RENDER_DEPLOYMENT_GUIDE.md
+!RENDER_QUICK_START.txt
+!START_HERE.md
+!COMPLETE_SYSTEM_GUIDE.md
+!TROUBLESHOOTING.md
+!TESTING_GUIDE.md
+!MANUAL_TESTING_GUIDE.md
+!INTEGRATION_TESTING_GUIDE.md
+!DATABASE_BACKUP_GUIDE.md
+!QUICK_START.md
+!NEXT_PHASE_GUIDE.md
+!FINAL_GUIDE.md
+
+# Test Files (keep only essential test files)
+test_*.py
+test_*.html
+verify_*.py
+check_*.py
+quick_test_*.py
+
+# Keep conftest.py for pytest
+!conftest.py
+
+# Migration Scripts (development only)
+migrate_*.py
+setup_*.py
+create_*.py
+restore_*.py
+backup_*.py
+
+# Keep essential setup scripts
+!setup_complete_system.py
+
+# Batch Files (Windows specific)
+*.bat
+
+# Service Files (Linux specific - for local dev)
+*.service
+
+# Configuration Templates
+*.template
+
+# Quick Reference Files
+*_QUICK_REF.txt
+*_REFERENCE.txt
+QUICK_*.txt
+*_INSTRUCTIONS.txt
+LOGIN_CREDENTIALS.txt
+TEST_ACCOUNTS.txt
+CLEAR_CACHE_INSTRUCTIONS.txt
+PROMPT_FOR_NEXT_CHAT.txt
+
+# Keep essential quick start
+!RENDER_QUICK_START.txt
+
+# Test HTML Files in static/
+static/test_*.html
+
+# Modals Backup
+modals rewind/
+
+# Kiro IDE
+.kiro/
+
+# Temporary Files
+*.tmp
+*.temp

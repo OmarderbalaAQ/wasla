@@ -1,0 +1,7 @@
+ <div class="card-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 3em; height: 3em; color: #95a5a6;">
+  <circle cx="12" cy="8" r="7" />
+  <path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5" />
+  <circle cx="12" cy="8" r="3" opacity="0.5" />
+</svg>
+                    </div>

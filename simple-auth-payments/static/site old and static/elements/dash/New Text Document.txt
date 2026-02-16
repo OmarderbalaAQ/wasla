@@ -1,0 +1,17 @@
+<img src="elements/dash/Gemini_Generated_Image(1).png" class="dash-img img-a">
+                    <img src="elements/dash/image (2) (1).png" class="dash-img img-b">
+                    <img src="elements/dash/image (5).png" class="dash-img img-c">
+
+.img-a {
+  animation: fadeSlide 12s infinite;
+}
+
+.img-b {
+  animation: fadeSlide 12s infinite;
+  animation-delay: 4s;
+}
+
+.img-c {
+  animation: fadeSlide 12s infinite;
+  animation-delay: 8s;
+}

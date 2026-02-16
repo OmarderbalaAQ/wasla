@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Simple Auth Payments</title>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-image-side">
+            <div class="brand-overlay">
+                <img src="site/elements/white.png" 
+                     alt="Logo" 
+                     class="overlay-logo">
+                <div class="overlay-text">
+                    <h1>Streamline your <br>online sales.</h1>
+                    <p>Manage all your online orders in one place and grow your business with ease.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-form-side">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Welcome back</h2>
+                    <p>Please enter your details to sign in.</p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                <div id="success-message" class="success-message" style="display: none;"></div>
+
+                <form class="auth-form" id="loginForm">
+                    <div class="input-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-row">
+                            <label for="password">Password</label>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder="••••••••" required>
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-continue">Continue</button>
+                </form>
+
+                <p class="signup-footer">
+                    Don't have an account? <a href="register.html">Get started</a>
+                    <br><br>
+                    <small style="color: #999;">Admin? <a href="admin.html">Admin Dashboard</a></small>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        });
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                // Create form data for OAuth2 password flow
+                const formData = new URLSearchParams();
+                formData.append('username', email);  // OAuth2 uses 'username' field
+                formData.append('password', password);
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store token in localStorage
+                    localStorage.setItem('access_token', data.access_token);
+                    
+                    successDiv.textContent = 'Login successful! Redirecting...';
+                    successDiv.style.display = 'block';
+                    
+                    // Check user role and subscription to determine redirect
+                    setTimeout(async () => {
+                        try {
+                            // Get user info
+                            const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                                headers: { 'Authorization': `Bearer ${data.access_token}` }
+                            });
+                            const user = await userResponse.json();
+                            
+                            // If admin, go to admin dashboard
+                            if (user.role === 'admin') {
+                                window.location.href = 'admin.html';
+                                return;
+                            }
+                            
+                            // If regular user, check subscription
+                            const subResponse = await fetch(`${API_BASE_URL}/auth/me/subscription`, {
+                                headers: { 'Authorization': `Bearer ${data.access_token}` }
+                            });
+                            const subscription = await subResponse.json();
+                            
+                            // If has access (subscription or admin override), go to client home
+                            if (subscription.has_access) {
+                                window.location.href = 'client_home.html';
+                            } else {
+                                // Otherwise go to bundles dashboard to purchase
+                                window.location.href = 'dashboard.html';
+                            }
+                        } catch (error) {
+                            console.error('Error checking user status:', error);
+                            window.location.href = 'dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    errorDiv.textContent = data.detail || 'Login failed. Please try again.';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Network error. Please make sure the API server is running.';
+                errorDiv.style.display = 'block';
+                console.error('Login error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

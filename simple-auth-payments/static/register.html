@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Wasla</title>
+    <!-- i18n Preload: Hide content until translations load (prevents FOUC) -->
+    <script src="js/i18n-preload.js"></script>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/page-translator.js"></script>
+    <script src="js/dynamic-content-i18n.js"></script>
+    <style>
+        :root { --brand-primary: #2E4275; --brand-hover: #324c8f; --brand-dark: #2c3e50; --text-main: #1A1A1A; --text-muted: #666666; }
+        .login-page { display: flex; min-height: 100vh; background-color: #fff; }
+        .login-image-side { flex: 1.2; position: relative; background: linear-gradient(135deg, #2E4275 0%, #324c8f 100%); display: flex; align-items: center; justify-content: center; }
+        .brand-overlay { position: absolute; inset: 0; padding: 60px; display: flex; flex-direction: column; justify-content: space-between; }
+        .overlay-logo { font-size: 32px; font-weight: 900; color: white; }
+        .overlay-text h1 { color: #fff; font-size: 48px; font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-transform: uppercase; }
+        .overlay-text p { color: rgba(255, 255, 255, 0.9); font-size: 18px; max-width: 420px; line-height: 1.6; }
+        .login-form-side { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .form-container { width: 100%; max-width: 400px; }
+        .form-header { margin-bottom: 32px; }
+        .form-header h2 { font-size: 32px; font-weight: 900; color: var(--brand-dark); margin-bottom: 8px; }
+        .form-header p { color: var(--text-muted); }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .input-group input { width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.2s; }
+        .input-group input:focus { outline: none; border-color: var(--brand-primary); }
+        .password-wrapper { position: relative; }
+        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #999; }
+        .btn-continue { width: 100%; padding: 16px; background: var(--brand-primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+        .btn-continue:hover { background: var(--brand-hover); }
+        .signup-footer { text-align: center; margin-top: 24px; color: var(--text-muted); }
+        .signup-footer a { color: var(--brand-primary); text-decoration: none; font-weight: 600; }
+        .signup-footer a:hover { text-decoration: underline; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .success-message { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        @media (max-width: 768px) { .login-image-side { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-image-side">
+            <div class="brand-overlay">
+                <div class="overlay-logo">Wasla</div>
+                <div class="overlay-text">
+                    <h1>Start your <br>journey today.</h1>
+                    <p>Join us and unlock access to premium analytics and delivery management.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-form-side">
+            <div class="form-container">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <div class="lang-dropdown-wrapper">
+                        <div class="lang-selector">
+                            <span class="globe-icon">🌐</span> EN
+                        </div>
+                        <ul class="lang-list">
+                            <li><a href="#">🇺🇸 English</a></li>
+                            <li><a href="#">🇸🇦 Arabic</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-header">
+                    <h2>Create an account</h2>
+                    <p>Please enter your details to get started.</p>
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+
+                <form class="auth-form" id="registerForm">
+                    <div class="input-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder="••••••••" required minlength="6">
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-continue">Create Account</button>
+                </form>
+
+                <p class="signup-footer">
+                    Already have an account? <a href="login.html">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, full_name: fullName })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Use i18n for success message
+                    const successMessage = typeof i18n !== 'undefined' && i18n.t ? 
+                        i18n.t('register.messages.success') : 'Registration successful! Redirecting to login...';
+                    successDiv.textContent = successMessage;
+                    successDiv.style.display = 'block';
+                    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                } else {
+                    // Check if it's a rate limit error
+                    if (response.status === 429 && data.error) {
+                        // Convert snake_case to camelCase for i18n lookup
+                        // too_many_registration_attempts -> tooManyRegistrationAttempts
+                        const camelCaseError = data.error.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+                        const errorKey = `errors.${camelCaseError}`;
+                        const translatedError = typeof i18n !== 'undefined' && i18n.t ? i18n.t(errorKey) : null;
+                        const errorMessage = translatedError && translatedError !== errorKey ? 
+                            translatedError : data.message;
+                        errorDiv.textContent = errorMessage;
+                    } else {
+                        // Use i18n for general error message
+                        const errorMessage = typeof i18n !== 'undefined' && i18n.t ? 
+                            i18n.t('register.messages.error') : 'Registration failed. Please try again.';
+                        errorDiv.textContent = data.detail || data.message || errorMessage;
+                    }
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                // Use i18n for network error message
+                const networkErrorMessage = typeof i18n !== 'undefined' && i18n.t ? 
+                    i18n.t('register.messages.networkError') : 'Network error. Please make sure the API server is running.';
+                errorDiv.textContent = networkErrorMessage;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

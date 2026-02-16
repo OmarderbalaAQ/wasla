@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="clientHome.pageTitle">My Dashboard - Wasla</title>
+    <!-- i18n Preload: Hide content until translations load (prevents FOUC) -->
+    <script src="js/i18n-preload.js"></script>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/page-translator.js"></script>
+    <script src="js/dynamic-content-i18n.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .client-home { min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .home-container { background: white; border-radius: 12px; padding: 50px; max-width: 700px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #f0f0f0; }
+        .home-container h1 { font-size: 42px; margin-bottom: 12px; color: #000; font-weight: 900; text-transform: uppercase; }
+        .home-container .subtitle { color: #666; margin-bottom: 40px; font-size: 18px; font-weight: 500; }
+        .subscription-status { background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 40px; border: 2px solid #e5e5e5; }
+        .subscription-status.active { background: linear-gradient(135deg, #d4edda 0%, #e8f5e9 100%); border: 2px solid #28a745; }
+        .subscription-status.expired { background: linear-gradient(135deg, #f8d7da 0%, #ffe5e5 100%); border: 2px solid #dc3545; }
+        .buttons-container { display: flex; flex-direction: column; gap: 16px; }
+        .btn-large { padding: 18px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: block; }
+        .btn-primary-large { background: #2E4275; color: white; }
+        .btn-primary-large:hover:not(:disabled) { background: #324c8f; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(46, 66, 117, 0.3); }
+        .btn-secondary-large { background: #6c757d; color: white; }
+        .btn-secondary-large:hover { background: #5a6268; transform: translateY(-2px); }
+        .btn-large:disabled { opacity: 0.5; cursor: not-allowed; }
+        .logout-link { margin-top: 24px; color: #2E4275; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .logout-link:hover { text-decoration: underline; }
+        .status-badge { display: inline-block; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 15px; margin-bottom: 15px; }
+        .status-badge.active { background: #28a745; color: white; }
+        .status-badge.expired { background: #dc3545; color: white; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; }
+        @media (max-width: 768px) { .home-container { padding: 30px 20px; } .home-container h1 { font-size: 32px; } }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="client_home.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                    <span style="font-size: 24px; font-weight: 900; color: #2E4275;">Wasla</span>
+                </a>
+            </div>
+
+            <nav class="nav-links">
+                <a href="index.html" data-i18n="clientHome.navigation.home">Home</a>
+                <a href="dashboard.html" data-i18n="clientHome.navigation.myPlans">My Plans</a>
+                <a href="solutions.html" data-i18n="clientHome.navigation.solutions">Solutions</a>
+                <a href="FAQ.html" data-i18n="clientHome.navigation.faq">FAQ</a>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="lang-dropdown-wrapper">
+                    <div class="lang-selector">
+                        <span class="globe-icon">🌐</span> EN
+                    </div>
+                    <ul class="lang-list">
+                        <li><a href="#" data-i18n="common.englishOption">🇺🇸 English</a></li>
+                        <li><a href="#" data-i18n="common.arabicOption">🇸🇦 Arabic</a></li>
+                    </ul>
+                </div>
+                <span id="userEmailNav" style="margin-right: 15px; font-weight: 500; font-size: 14px;"></span>
+                <button class="btn btn-outline" onclick="logout()" data-i18n="common.logout">Log out</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="client-home">
+        <div class="home-container">
+            <h1 data-i18n="clientHome.welcome">Welcome Back!</h1>
+            <p class="subtitle" id="userName">Loading...</p>
+
+            <div id="subscriptionStatus" class="subscription-status">
+                <div class="status-badge" data-i18n="clientHome.loading">Loading...</div>
+                <p id="statusText" data-i18n="clientHome.checkingStatus">Checking subscription status...</p>
+            </div>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+            <div class="buttons-container">
+                <button id="dashboardBtn" class="btn-large btn-primary-large" onclick="openDashboard()" data-i18n="clientHome.buttons.openDashboard">
+                    📊 Open My Dashboard
+                </button>
+                <a href="dashboard.html" class="btn-large btn-secondary-large" data-i18n="clientHome.buttons.viewPlans">
+                    💳 View Plans & Payment
+                </a>
+            </div>
+
+            <a href="#" onclick="logout()" class="logout-link" data-i18n="clientHome.links.logout">Logout</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        const token = localStorage.getItem('access_token');
+        if (!token) { window.location.href = 'login.html'; }
+
+        let dashboardUrl = null;
+        let hasAccess = false;
+
+        // Helper function to get translated text
+        function getTranslation(key, fallback = '') {
+            if (typeof i18n !== 'undefined' && i18n.t) {
+                const translation = i18n.t(key);
+                return translation !== key ? translation : fallback;
+            }
+            return fallback;
+        }
+
+        // Initialize loading text with translation
+        function initializeLoadingText() {
+            const loadingText = getTranslation('clientHome.loading', 'Loading...');
+            document.getElementById('userName').textContent = loadingText;
+        }
+
+        async function loadUserData() {
+            try {
+                const userResponse = await fetch(`${API_BASE_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const user = await userResponse.json();
+                
+                // Set the actual user name (this will override the loading text)
+                document.getElementById('userName').textContent = user.full_name || user.email;
+                document.getElementById('userEmailNav').textContent = user.email;
+
+                const subResponse = await fetch(`${API_BASE_URL}/auth/me/subscription`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const subscription = await subResponse.json();
+
+                const statusDiv = document.getElementById('subscriptionStatus');
+                const dashboardBtn = document.getElementById('dashboardBtn');
+
+                dashboardUrl = subscription.dashboard_url;
+                hasAccess = subscription.has_access;
+
+                if (subscription.has_access) {
+                    statusDiv.className = 'subscription-status active';
+                    
+                    // Build translated content for active subscription
+                    const activeLabel = getTranslation('clientHome.subscriptionStatus.active', 'Active');
+                    const subscriptionActiveText = getTranslation('clientHome.subscriptionStatus.activeLabel', 'Subscription Active');
+                    const validUntilText = getTranslation('clientHome.subscriptionStatus.validUntil', 'Valid until:');
+                    const accessGrantedText = getTranslation('clientHome.subscriptionStatus.accessGranted', 'Access granted by admin');
+                    const planText = getTranslation('clientHome.subscriptionStatus.plan', 'Plan:');
+                    
+                    statusDiv.innerHTML = `
+                        <div class="status-badge active">✓ ${activeLabel}</div>
+                        <p><strong>${subscriptionActiveText}</strong></p>
+                        ${subscription.subscription_end_date ? 
+                            `<p>${validUntilText} ${new Date(subscription.subscription_end_date).toLocaleDateString()}</p>` : 
+                            `<p>${accessGrantedText}</p>`
+                        }
+                        ${subscription.bundle_name ? `<p>${planText} ${subscription.bundle_name}</p>` : ''}
+                    `;
+                    dashboardBtn.disabled = false;
+                } else {
+                    statusDiv.className = 'subscription-status expired';
+                    
+                    // Build translated content for expired subscription
+                    const noSubscriptionText = getTranslation('clientHome.subscriptionStatus.noSubscription', 'No Active Subscription');
+                    const subscriptionRequiredText = getTranslation('clientHome.subscriptionStatus.subscriptionRequired', 'Subscription Required');
+                    const purchaseRequiredText = getTranslation('clientHome.subscriptionStatus.purchaseRequired', 'Please purchase a plan to access your dashboard');
+                    
+                    statusDiv.innerHTML = `
+                        <div class="status-badge expired">✗ ${noSubscriptionText}</div>
+                        <p><strong>${subscriptionRequiredText}</strong></p>
+                        <p>${purchaseRequiredText}</p>
+                    `;
+                    dashboardBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                const errorText = getTranslation('clientHome.errorMessages.loadingError', 'Error loading subscription status');
+                document.getElementById('errorMessage').textContent = errorText;
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+
+        function openDashboard() {
+            if (!hasAccess) { 
+                const alertText = getTranslation('clientHome.errorMessages.noSubscriptionAlert', 'You need an active subscription to access the dashboard.');
+                alert(alertText); 
+                return; 
+            }
+            if (!dashboardUrl) { 
+                const alertText = getTranslation('clientHome.errorMessages.dashboardUrlError', 'Dashboard URL not configured. Please contact support.');
+                alert(alertText); 
+                return; 
+            }
+            window.open(dashboardUrl, '_blank');
+        }
+
+        function logout() { 
+            localStorage.removeItem('access_token'); 
+            window.location.href = 'login.html'; 
+        }
+
+        // Load user data after i18n is initialized
+        if (typeof i18n !== 'undefined') {
+            i18n.init().then(() => {
+                initializeLoadingText();
+                loadUserData();
+            });
+        } else {
+            loadUserData();
+        }
+
+        // Listen for language changes to update loading text if still loading
+        window.addEventListener('languageChanged', function() {
+            // Only update if we're still showing loading text
+            const currentText = document.getElementById('userName').textContent;
+            if (currentText === 'Loading...' || currentText === 'تحميل...') {
+                initializeLoadingText();
+            }
+        });
+    </script>
+</body>
+</html>

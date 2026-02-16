@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Plans - Simple Auth Payments</title>
+    <!-- i18n Preload: Hide content until translations load (prevents FOUC) -->
+    <script src="js/i18n-preload.js"></script>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/page-translator.js"></script>
+    <script src="js/dynamic-content-i18n.js"></script>
+    <style>
+        /* Subscription Modal Styles */
+        .subscription-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        
+        .subscription-modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .subscription-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 32px 20px 32px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .subscription-modal-header h2 {
+            margin: 0;
+            color: #2E4275;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        
+        .subscription-close {
+            color: #999;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        
+        .subscription-close:hover {
+            color: #666;
+        }
+        
+        .subscription-modal-body {
+            padding: 28px 32px 32px 32px;
+        }
+        
+        .plan-info {
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border-radius: 12px;
+            border-left: 4px solid #2E4275;
+        }
+        
+        .plan-base-price {
+            margin: 0;
+            font-size: 17px;
+            color: #2E4275;
+        }
+        
+        .duration-selection {
+            margin-bottom: 28px;
+        }
+        
+        .duration-label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 17px;
+            color: #333;
+        }
+        
+        .duration-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .duration-select:focus {
+            outline: none;
+            border-color: #2E4275;
+            box-shadow: 0 0 0 3px rgba(46, 66, 117, 0.1);
+        }
+        
+        .pricing-breakdown {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+        }
+        
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .pricing-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .pricing-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .pricing-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .discount-row .pricing-label {
+            color: #28a745;
+        }
+        
+        .discount-value {
+            color: #28a745 !important;
+        }
+        
+        .final-row {
+            border-top: 2px solid #e5e5e5;
+            padding-top: 16px;
+            margin-top: 16px;
+            font-size: 18px;
+        }
+        
+        .final-row .pricing-label {
+            color: #2E4275;
+            font-weight: 700;
+        }
+        
+        .final-value {
+            color: #2E4275 !important;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        .subscription-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+        }
+        
+        .btn-cancel {
+            padding: 12px 24px;
+            border: 2px solid #e5e5e5;
+            background: white;
+            color: #666;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-cancel:hover {
+            border-color: #ccc;
+            color: #333;
+        }
+        
+        .btn-subscribe {
+            padding: 12px 28px;
+            border: none;
+            background: linear-gradient(135deg, #2E4275 0%, #324c8f 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(46, 66, 117, 0.3);
+        }
+        
+        .btn-subscribe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 66, 117, 0.4);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .subscription-modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+            
+            .subscription-modal-header,
+            .subscription-modal-body {
+                padding: 20px 24px;
+            }
+            
+            .subscription-modal-header h2 {
+                font-size: 22px;
+            }
+            
+            .subscription-actions {
+                flex-direction: column;
+            }
+            
+            .btn-cancel,
+            .btn-subscribe {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="nav-container">
+            <div class="logo">
+                <span style="font-size: 24px; font-weight: 700;">Simple Auth</span>
+            </div>
+
+            <nav class="nav-links">
+                <a href="client_home.html" data-i18n="common.dashboard">dashboard</a>
+                <a href="dashboard.html" class="active" data-i18n="dashboard.header.plans">Plans</a>
+                <a href="solutions.html" data-i18n="common.solutions">Solutions</a>
+                 <a href="FAQ.html" data-i18n="common.faq">FAQ</a>
+            </nav>
+
+           <div class="nav-actions">
+                
+                <div class="lang-dropdown-wrapper">
+        <div class="lang-selector">
+            <span class="globe-icon">🌐</span> EN
+        </div>
+        <ul class="lang-list">
+            <li><a href="#">🇺🇸 English</a></li>
+            <li><a href="#">🇸🇦 Arabic</a></li>
+        </ul>
+                </div>
+                <span id="userEmail" style="margin-right: 15px; font-weight: 500;"></span>
+                <button class="btn btn-outline" onclick="logout()" data-i18n="common.logout">Log out</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-header">
+                <span class="pricing-label" data-i18n="dashboard.pricing.label">Plans & Pricing</span>
+                <h2 class="pricing-title" data-i18n="dashboard.pricing.title">Choose Your Subscription Plan</h2>
+                <p class="pricing-desc" data-i18n="dashboard.pricing.description">Select the perfect plan for your business needs. All plans include access to your personalized analytics dashboard.</p>
+                
+                <!-- Multi-Month Discount Banner -->
+                <div id="discountBanner" style="background: linear-gradient(135deg, #2E4275 0%, #324c8f 100%); padding: 20px 30px; border-radius: 12px; margin: 30px auto; max-width: 600px; color: white; text-align: center;">
+                    <strong style="font-size: 18px; display: block; margin-bottom: 10px;" id="discountBannerTitle">💰 Multi-Month Discounts Available!</strong>
+                    <div id="discountOptions" style="display: flex; justify-content: center; gap: 40px; font-size: 16px; flex-wrap: wrap;">
+                        <span data-i18n="dashboard.pricing.loadingDiscounts">Loading discount options...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pricing-grid" id="bundles-container">
+                <!-- Bundles will be loaded here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="container faq-grid">
+            <div class="faq-sidebar">
+                <h2 class="faq-title" data-i18n="faq.sidebar.title">FAQ</h2>
+                <p class="faq-subtitle" data-i18n="faq.sidebar.subtitle">Have questions about our subscription plans?</p>
+                <button class="btn-primary faq-sidebar-btn" onclick="window.location.href='client_home.html'" data-i18n="faq.backToHome">Back to Home</button>
+            </div>
+
+            <div class="faq-list">
+                <div class="faq-item open">
+                    <div class="faq-question" role="button" aria-expanded="true" tabindex="0" onclick="toggleFAQ(this)">
+                        <h3 data-i18n="faq.questions.multiMonthDiscounts">How do multi-month discounts work?</h3>
+                        <span class="faq-toggle-icon">↑</span> 
+                    </div>
+                    <div class="faq-answer">
+                        <p id="discountFaqText" data-i18n="faq.questions.multiMonthAnswer">When you purchase longer subscription periods, you automatically receive discounts. The discount is applied automatically at checkout based on the subscription length you choose.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" role="button" aria-expanded="false" tabindex="0" onclick="toggleFAQ(this)">
+                        <h3 data-i18n="faq.questions.upgradePlan">Can I upgrade my plan later?</h3>
+                        <span class="faq-toggle-icon">↓</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p data-i18n="faq.questions.upgradeAnswer">Yes! You can upgrade to a higher tier at any time. Your new subscription will start after your current subscription expires, ensuring you don't lose any paid time.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" role="button" aria-expanded="false" tabindex="0" onclick="toggleFAQ(this)">
+                        <h3 data-i18n="faq.questions.subscriptionExpires">What happens when my subscription expires?</h3>
+                        <span class="faq-toggle-icon">↓</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p data-i18n="faq.questions.expiresAnswer">When your subscription expires, you'll lose access to your analytics dashboard. However, you can renew at any time to regain access. All your data is safely stored and will be available when you resubscribe.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" role="button" aria-expanded="false" tabindex="0" onclick="toggleFAQ(this)">
+                        <h3 data-i18n="faq.questions.refunds">Do you offer refunds?</h3>
+                        <span class="faq-toggle-icon">↓</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p data-i18n="faq.questions.refundsAnswer">We offer a 7-day money-back guarantee on all new subscriptions. If you're not satisfied with our service, contact our support team within 7 days of purchase for a full refund.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <footer class="main-footer">
+    <div class="container">
+        <div class="footer-centered-layout">
+
+            <div class="footer-logo">
+                <a href="/">
+                    <img src="elements\white.png" alt="WASLA logo">
+                </a>
+            </div>
+
+            <nav class="footer-nav">
+                <a href="solutions.html">Solutions</a>
+                <a href="form.html">Contact us</a>
+                <a href="FAQ.html">FAQ</a>
+            </nav>
+
+            <div class="footer-socials">
+                <a href="#" class="social-icon" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+
+                <a href="https://www.tiktok.com/@wasla_sa?_r=1&_t=ZS-92lSsqOIZEq" class="social-icon" aria-label="TikTok">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                </a>
+
+                <a href="https://www.instagram.com/wasla.sa.s?igsh=MWJkcjIyb2w1dDRv" class="social-icon" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                </a>
+
+                <a href="#" class="social-icon" aria-label="LinkedIn">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <p class="copyright">Copyright © 2025 Wasla. All rights reserved.</p>
+                <div class="legal-links">
+                    <a href="#">Terms of service</a>
+                    <span class="separator">•</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+    <!-- Subscription Modal -->
+    <div id="subscriptionModal" class="subscription-modal">
+        <div class="subscription-modal-content">
+            <div class="subscription-modal-header">
+                <h2><span data-i18n="dashboard.modal.title">Subscribe to</span> <span id="modalPlanName">Plan</span></h2>
+                <span class="subscription-close" onclick="closeSubscriptionModal()">&times;</span>
+            </div>
+            
+            <div class="subscription-modal-body">
+                <div class="plan-info">
+                    <p class="plan-base-price"><span data-i18n="dashboard.modal.basePrice">Base Price:</span> <strong>$<span id="modalBasePrice">0.00</span><span data-i18n="dashboard.modal.perMonth">/month</span></strong></p>
+                </div>
+                
+                <div class="duration-selection">
+                    <label for="subscriptionMonths" class="duration-label" data-i18n="dashboard.modal.selectDuration">Select Subscription Duration:</label>
+                    <select id="subscriptionMonths" class="duration-select" onchange="updatePricingDisplay()">
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="pricing-breakdown">
+                    <div class="pricing-row">
+                        <span class="pricing-label" data-i18n="dashboard.modal.originalPrice">Original Price:</span>
+                        <span class="pricing-value">$<span id="originalPrice">0.00</span></span>
+                    </div>
+                    
+                    <div id="discountSection" class="pricing-row discount-row" style="display: none;">
+                        <span class="pricing-label"><span data-i18n="dashboard.modal.discount">Discount</span> (<span id="discountPercentage">0</span><span data-i18n="dashboard.modal.discountPercent">%</span>):</span>
+                        <span class="pricing-value discount-value">-$<span id="discountAmount">0.00</span></span>
+                    </div>
+                    
+                    <div class="pricing-row final-row">
+                        <span class="pricing-label" data-i18n="dashboard.modal.finalPrice">Final Price:</span>
+                        <span class="pricing-value final-value">$<span id="finalPrice">0.00</span></span>
+                    </div>
+                </div>
+                
+                <div class="subscription-actions">
+                    <button type="button" class="btn-cancel" onclick="closeSubscriptionModal()" data-i18n="dashboard.modal.cancel">Cancel</button>
+                    <button type="button" class="btn-subscribe" onclick="processSubscription()" data-i18n="dashboard.modal.subscribeNow">Subscribe Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="js/secure-auth.js"></script>
+    <script>
+        const API_BASE_URL = window.location.origin; // Use same origin as secure-auth.js
+        const stripe = Stripe('pk_test_YOUR_PUBLISHABLE_KEY');
+
+        // Check authentication using secure cookies
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuth = await window.secureAuth.isAuthenticated();
+            if (!isAuth) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Wait for i18n to be ready
+            if (typeof i18n !== 'undefined') {
+                await i18n.init();
+                
+                // Wait for i18nReady event to ensure translations are loaded
+                if (i18n.isReady) {
+                    initializeDashboard();
+                } else {
+                    window.addEventListener('i18nReady', initializeDashboard);
+                }
+            } else {
+                // Fallback if i18n is not available
+                initializeDashboard();
+            }
+        });
+
+        function initializeDashboard() {
+            console.log('🚀 Initializing dashboard...');
+            fetchUserInfo();
+            loadDiscountOptions();
+            fetchBundles();
+            
+            // Listen for language changes
+            window.addEventListener('languageChanged', function() {
+                loadDiscountOptions();
+                fetchBundles();
+            });
+        }
+
+        // Global variables for modal
+        let currentBundleId = null;
+        let currentPlanName = '';
+        let currentBasePrice = 0;
+        let currentBasePriceCents = 0; // Add cents version for accurate calculation
+        let discountRules = [];
+
+        // Load discount rules for real-time calculation
+        async function loadDiscountRules() {
+            try {
+                // Use public endpoint instead of admin-only endpoint
+                const response = await fetch(`${API_BASE_URL}/payments/discount-options`);
+                if (response.ok) {
+                    const options = await response.json();
+                    // Convert public endpoint format to internal format
+                    discountRules = options.map(option => ({
+                        is_active: true, // All returned options are active
+                        min_months: option.min_months,
+                        max_months: option.max_months,
+                        discount_percentage: option.discount_percentage
+                    }));
+                    console.log('✅ Loaded discount rules:', discountRules);
+                } else {
+                    console.error('Failed to load discount options');
+                    discountRules = [];
+                }
+            } catch (error) {
+                console.error('Error loading discount options:', error);
+                discountRules = [];
+            }
+        }
+
+        // Calculate discount for given months
+        function calculateDiscount(months) {
+            console.log(`🔍 Calculating discount for ${months} months`);
+            console.log('📋 Available discount rules:', discountRules);
+            
+            let bestDiscount = 0;
+            for (const rule of discountRules) {
+                console.log(`🔎 Checking rule: ${rule.min_months}-${rule.max_months || '∞'} months = ${rule.discount_percentage}%`);
+                
+                if (rule.is_active && rule.min_months <= months) {
+                    if (rule.max_months === null || months <= rule.max_months) {
+                        console.log(`✅ Rule matches! Discount: ${rule.discount_percentage}%`);
+                        if (rule.discount_percentage > bestDiscount) {
+                            bestDiscount = rule.discount_percentage;
+                            console.log(`🎯 New best discount: ${bestDiscount}%`);
+                        }
+                    } else {
+                        console.log(`❌ Rule doesn't match: ${months} > ${rule.max_months}`);
+                    }
+                } else {
+                    console.log(`❌ Rule doesn't match: ${months} < ${rule.min_months}`);
+                }
+            }
+            
+            console.log(`🏆 Final discount: ${bestDiscount}%`);
+            return bestDiscount;
+        }
+
+        // Update pricing display in modal
+        function updatePricingDisplay() {
+            const monthsSelect = document.getElementById('subscriptionMonths');
+            const months = parseInt(monthsSelect.value);
+            
+            console.log(`💰 Updating pricing for ${months} months, base price: $${currentBasePrice} (${currentBasePriceCents} cents)`);
+            
+            // Use cents for calculation to match backend exactly
+            const originalAmountCents = currentBasePriceCents * months;
+            const discountPercentage = calculateDiscount(months);
+            const discountAmountCents = Math.floor(originalAmountCents * discountPercentage / 100); // Use Math.floor like backend
+            const finalAmountCents = originalAmountCents - discountAmountCents;
+            
+            // Convert to dollars for display
+            const originalPrice = originalAmountCents / 100;
+            const discountAmount = discountAmountCents / 100;
+            const finalPrice = finalAmountCents / 100;
+            
+            console.log(`📊 Pricing breakdown (cents calculation):`);
+            console.log(`   Original: ${originalAmountCents} cents = $${originalPrice.toFixed(2)}`);
+            console.log(`   Discount: ${discountPercentage}% = ${discountAmountCents} cents = $${discountAmount.toFixed(2)}`);
+            console.log(`   Final: ${finalAmountCents} cents = $${finalPrice.toFixed(2)}`);
+            
+            // Update display elements
+            document.getElementById('originalPrice').textContent = originalPrice.toFixed(2);
+            document.getElementById('discountPercentage').textContent = discountPercentage;
+            document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+            document.getElementById('finalPrice').textContent = finalPrice.toFixed(2);
+            
+            // Show/hide discount section
+            const discountSection = document.getElementById('discountSection');
+            if (discountPercentage > 0) {
+                console.log('✅ Showing discount section');
+                discountSection.style.display = 'flex';
+            } else {
+                console.log('❌ Hiding discount section (no discount)');
+                discountSection.style.display = 'none';
+            }
+        }
+
+        // Close subscription modal
+        function closeSubscriptionModal() {
+            document.getElementById('subscriptionModal').style.display = 'none';
+        }
+
+        // Process subscription
+        async function processSubscription() {
+            const months = parseInt(document.getElementById('subscriptionMonths').value);
+            
+            if (!months || months < 1 || months > 24) {
+                alert('Please select a valid subscription duration');
+                return;
+            }
+
+            try {
+                const response = await window.secureAuth.apiRequest(`${API_BASE_URL}/payments/create-payment-intent`, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        bundle_id: currentBundleId,
+                        months: months
+                    })
+                });
+
+                if (!response) {
+                    // Authentication failed, user redirected
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const discount = data.discount_percentage || 0;
+                    const finalPrice = (data.amount_cents / 100).toFixed(2);
+                    const originalPrice = (data.original_amount_cents / 100).toFixed(2);
+                    
+                    let message = `✅ Payment Intent Created Successfully!\n\n`;
+                    message += `📦 Plan: ${currentPlanName}\n`;
+                    message += `📅 Duration: ${months} month${months > 1 ? 's' : ''}\n\n`;
+                    
+                    if (discount > 0) {
+                        message += `💵 Original Price: $${originalPrice}\n`;
+                        message += `🎉 Discount: ${discount}%\n`;
+                        message += `💰 Final Price: $${finalPrice}\n\n`;
+                    } else {
+                        message += `💰 Total Price: $${finalPrice}\n\n`;
+                    }
+                    
+                    message += `🔐 Client Secret: ${data.client_secret}\n\n`;
+                    message += `ℹ️ In production, Stripe Elements would be used to complete the payment securely.`;
+                    
+                    alert(message);
+                    closeSubscriptionModal();
+                    
+                    // Optionally redirect to home after successful payment intent creation
+                    // window.location.href = 'client_home.html';
+                } else if (response.status === 429) {
+                    // Rate limit exceeded - show translated error message
+                    const errorKey = data.error || 'tooManyPaymentAttempts';
+                    const errorMessage = i18n.t(`errors.${errorKey}`) || data.message || 'Too many payment attempts';
+                    alert(`❌ ${errorMessage}`);
+                } else {
+                    alert('❌ Error creating payment: ' + (data.detail || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('❌ Network error: ' + error.message);
+                console.error('Purchase error:', error);
+            }
+        }
+
+        // Tier mapping for icons and descriptions
+        const tierConfig = {
+            1: { // Basic/Silver
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 3em; height: 3em; color: #95a5a6;">
+                    <circle cx="12" cy="8" r="7" />
+                    <path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5" />
+                    <circle cx="12" cy="8" r="3" opacity="0.5" />
+                </svg>`,
+                titleKey: 'plans.silver.title',
+                descKey: 'plans.silver.description',
+                features: [
+                    'basicAnalyticsDashboard',
+                    'monthlyPerformanceReports',
+                    'emailSupport',
+                    'secureDataStorage'
+                ]
+            },
+            2: { // Pro/Gold
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 2.5em; height: 2.5em; color: #f1c40f;">
+                    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" />
+                    <path d="M5 20h14" />
+                    <circle cx="2" cy="4" r="0.5" fill="currentColor" />
+                    <circle cx="12" cy="4" r="0.5" fill="currentColor" />
+                    <circle cx="22" cy="4" r="0.5" fill="currentColor" />
+                </svg>`,
+                titleKey: 'plans.gold.title',
+                descKey: 'plans.gold.description',
+                features: [
+                    'advancedAnalyticsDashboard',
+                    'weeklyPerformanceReports',
+                    'customInsights',
+                    'priorityEmailSupport',
+                    'enhancedDataSecurity',
+                    'mobileAppAccess'
+                ]
+            },
+            3: { // Premium/Platinum
+                icon: `<svg width="46" height="72" viewBox="0 0 100 85" xmlns="http://www.w3.org/2000/svg">
+                    <style>.diamond-shape { fill: #7209B7; }</style>
+                    <polygon class="diamond-shape" points="0,35 32,35 16,0" />
+                    <polygon class="diamond-shape" points="19,0 47,0 33,35" />
+                    <polygon class="diamond-shape" points="36,35 64,35 50,0" />
+                    <polygon class="diamond-shape" points="53,0 81,0 67,35" />
+                    <polygon class="diamond-shape" points="68,35 100,35 84,0" />
+                    <polygon class="diamond-shape" points="0,37 33,37 47,85" />
+                    <polygon class="diamond-shape" points="36,37 64,37 50,85" />
+                    <polygon class="diamond-shape" points="67,37 100,37 53,85" />
+                </svg>`,
+                titleKey: 'plans.platinum.title',
+                descKey: 'plans.platinum.description',
+                features: [
+                    'premiumAnalyticsDashboard',
+                    'dailyPerformanceReports',
+                    'aiPoweredInsights',
+                    'dedicatedAccountManager',
+                    'prioritySupport24x7',
+                    'enterpriseGradeSecurity',
+                    'mobileApiAccess',
+                    'customBrandingOptions'
+                ]
+            }
+        };
+
+        // Fetch user info using secure authentication
+        async function fetchUserInfo() {
+            try {
+                const user = await window.secureAuth.getCurrentUser();
+                if (user) {
+                    document.getElementById('userEmail').textContent = user.email;
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+                logout();
+            }
+        }
+
+        async function loadDiscountOptions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/payments/discount-options`);
+                if (response.ok) {
+                    const options = await response.json();
+                    
+                    // Update discount banner title
+                    const bannerTitle = document.getElementById('discountBannerTitle');
+                    if (bannerTitle) {
+                        bannerTitle.textContent = i18n.t('dashboard.pricing.discountBanner');
+                    }
+                    
+                    // Update discount banner
+                    const discountOptionsDiv = document.getElementById('discountOptions');
+                    if (options.length > 0) {
+                        discountOptionsDiv.innerHTML = options.map(option => 
+                            `<span>${option.display_text}</span>`
+                        ).join('');
+                        
+                        // Update FAQ text
+                        const faqText = document.getElementById('discountFaqText');
+                        if (faqText) {
+                            const baseText = i18n.t('faq.questions.multiMonthAnswer');
+                            const discountExamples = options.map(option => option.banner_message).join(' ');
+                            faqText.textContent = `${baseText} ${discountExamples}`;
+                        }
+                    } else {
+                        discountOptionsDiv.innerHTML = '<span>No discounts currently available</span>';
+                    }
+                } else {
+                    console.error('Failed to load discount options');
+                    document.getElementById('discountOptions').innerHTML = '<span>Unable to load discount information</span>';
+                }
+            } catch (error) {
+                console.error('Error loading discount options:', error);
+                document.getElementById('discountOptions').innerHTML = '<span>Unable to load discount information</span>';
+            }
+        }
+
+        // Fetch and display bundles using secure authentication
+        async function fetchBundles() {
+            console.log('🔄 Starting fetchBundles...');
+            console.log('📍 API_BASE_URL:', API_BASE_URL);
+            console.log('🌐 window.location.origin:', window.location.origin);
+            
+            try {
+                console.log('📡 Making request to:', `${API_BASE_URL}/payments/bundles`);
+                
+                // Try direct fetch first to test connectivity
+                const directResponse = await fetch(`${API_BASE_URL}/payments/bundles`);
+                console.log('📊 Direct fetch status:', directResponse.status);
+                console.log('📊 Direct fetch ok:', directResponse.ok);
+                
+                if (!directResponse.ok) {
+                    throw new Error(`Direct fetch failed: ${directResponse.status} ${directResponse.statusText}`);
+                }
+                
+                const bundles = await directResponse.json();
+                console.log('✅ Bundles loaded:', bundles.length, 'bundles');
+                console.log('📦 Bundle data:', bundles);
+
+                const container = document.getElementById('bundles-container');
+                
+                if (!container) {
+                    throw new Error('bundles-container element not found');
+                }
+                
+                // Sort bundles by tier level (descending - Premium first)
+                bundles.sort((a, b) => (b.tier_level || 1) - (a.tier_level || 1));
+
+                // Check if i18n is available
+                if (typeof i18n === 'undefined') {
+                    console.warn('⚠️ i18n not available, using fallback text');
+                    container.innerHTML = '<p style="text-align: center; color: #dc3545;">i18n not loaded. Please refresh the page.</p>';
+                    return;
+                }
+
+                container.innerHTML = bundles.map(bundle => {
+                    const config = tierConfig[bundle.tier_level || 1];
+                    if (!config) {
+                        console.warn(`⚠️ No config found for tier level ${bundle.tier_level}`);
+                        return '';
+                    }
+                    
+                    const price = (bundle.price_cents / 100).toFixed(2);
+                    
+                    // Get translated title and description
+                    const title = i18n.t(config.titleKey) || config.titleKey;
+                    const desc = i18n.t(config.descKey) || config.descKey;
+                    
+                    // Get translated features from pricingFeatures
+                    const featuresHTML = config.features.map(featureKey => {
+                        const featureText = i18n.t(`pricingFeatures.${featureKey}`) || featureKey;
+                        return `<li>${featureText}</li>`;
+                    }).join('');
+                    
+                    return `
+                        <div class="pricing-card">
+                            <div class="card-top">
+                                <div class="card-icon-wrapper">
+                                    ${config.icon}
+                                </div>
+                                <h3>${title}</h3>
+                                <p class="card-desc">${desc}</p>
+                                
+                                <div class="price-wrapper">
+                                    <span class="price-label">From</span>
+                                    <span class="price-amount">${price}</span>
+                                    <span class="price-period">/ month</span>
+                                </div>
+
+                                <button class="pricing-btn" onclick="purchaseBundle(${bundle.id}, '${title}', ${price}, ${bundle.price_cents})">
+                                    Subscribe Now
+                                </button>
+                            </div>
+
+                            <div class="card-features">
+                                <span class="features-title" data-i18n="common.includes">Includes:</span>
+                                <ul>
+                                    ${featuresHTML}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                console.log('✅ Dashboard bundles rendered successfully');
+                
+            } catch (error) {
+                console.error('❌ Error in fetchBundles:', error);
+                console.error('❌ Error stack:', error.stack);
+                
+                const container = document.getElementById('bundles-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; color: #dc3545; padding: 20px;">
+                            <h3>Error loading plans</h3>
+                            <p>Error: ${error.message}</p>
+                            <p>Check browser console for details.</p>
+                            <button onclick="fetchBundles()" style="padding: 10px 20px; margin-top: 10px;">Retry</button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Show subscription modal (replaces the old purchaseBundle function)
+        async function purchaseBundle(bundleId, planName, basePrice, basePriceCents) {
+            console.log(`🚀 Opening subscription modal for ${planName} ($${basePrice} = ${basePriceCents} cents)`);
+            
+            currentBundleId = bundleId;
+            currentPlanName = planName;
+            currentBasePrice = basePrice;
+            currentBasePriceCents = basePriceCents; // Store cents for accurate calculation
+            
+            // Always load discount rules fresh when modal opens
+            console.log('📥 Loading discount rules...');
+            await loadDiscountRules();
+            
+            // Update modal content
+            document.getElementById('modalPlanName').textContent = planName;
+            document.getElementById('modalBasePrice').textContent = basePrice.toFixed(2);
+            
+            // Generate month options (1-24 months)
+            const monthsSelect = document.getElementById('subscriptionMonths');
+            monthsSelect.innerHTML = '';
+            for (let i = 1; i <= 24; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${i} Month${i > 1 ? 's' : ''}`;
+                monthsSelect.appendChild(option);
+            }
+            
+            // Set default to 1 month and update pricing
+            monthsSelect.value = '1';
+            updatePricingDisplay();
+            
+            // Show modal
+            document.getElementById('subscriptionModal').style.display = 'block';
+            console.log('✅ Modal opened successfully');
+        }
+
+        // FAQ Toggle
+        function toggleFAQ(element) {
+            const faqItem = element.closest('.faq-item');
+            const isOpen = faqItem.classList.contains('open');
+            
+            // Close all FAQs
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('open');
+                item.querySelector('.faq-toggle-icon').textContent = '↓';
+            });
+            
+            // Open clicked FAQ if it was closed
+            if (!isOpen) {
+                faqItem.classList.add('open');
+                faqItem.querySelector('.faq-toggle-icon').textContent = '↑';
+            }
+        }
+
+        // Logout using secure authentication
+        function logout() {
+            window.secureAuth.logout();
+        }
+
+    </script>
+</body>
+</html>

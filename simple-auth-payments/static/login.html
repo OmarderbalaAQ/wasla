@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="login.pageTitle">Login - Wasla</title>
+    <!-- i18n Preload: Hide content until translations load (prevents FOUC) -->
+    <script src="js/i18n-preload.js"></script>
+    <link rel="stylesheet" href="dd.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/page-translator.js"></script>
+    <script src="js/dynamic-content-i18n.js"></script>
+    <style>
+        .password-wrapper { position: relative; }
+        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #999; }
+        .btn-continue { width: 100%; padding: 16px; background: var(--brand-primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+        .btn-continue:hover { background: var(--brand-hover); }
+        .signup-footer { text-align: center; margin-top: 24px; color: var(--text-muted); }
+        .signup-footer a { color: var(--brand-primary); text-decoration: none; font-weight: 600; }
+        .signup-footer a:hover { text-decoration: underline; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .success-message { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        @media (max-width: 768px) { .login-image-side { display: none; } }
+    </style>
+
+    <style>
+        .login-page {
+            display: flex;
+            min-height: 100vh;
+            background-color: #fff;
+        }
+
+        /* --- Left Side: Immersive Image --- */
+        .login-image-side {
+            flex: 1.2;
+            position: relative;
+            background-image: url("elements/dd.jpg"); 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Gradient overlay */
+        .brand-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(46, 66, 117, 0.9) 0%, rgba(50, 76, 143, 0.7) 100%);
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* NEW: Styles to make the link invisible/non-disruptive */
+        .logo-link {
+            display: inline-block;
+            width: fit-content;
+            text-decoration: none;
+            line-height: 0; /* Prevents tiny gaps below the logo */
+        }
+
+        .overlay-logo {
+            width: 150px;
+            display: block; /* Ensures it fills the link container correctly */
+        }
+
+        .overlay-text h1 {
+            color: #fff;
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .overlay-text p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            max-width: 420px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-image-side">
+            <div class="brand-overlay">
+                <a href="index.html" class="logo-link">
+                    <img src="elements\white.png" alt="WASLA logo" class="overlay-logo">
+                </a>
+                      
+                <div class="overlay-text">
+                    <h1 data-i18n="login.overlay.title">Streamline your online sales.</h1>
+                    <p data-i18n="login.overlay.description">Manage all your online orders in one place and grow your business with ease.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-form-side">
+            <div class="form-container">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <div class="lang-dropdown-wrapper">
+                        <div class="lang-selector">
+                            <span class="globe-icon">🌐</span> EN
+                        </div>
+                        <ul class="lang-list">
+                            <li><a href="#" data-i18n="common.englishOption">🇺🇸 English</a></li>
+                            <li><a href="#" data-i18n="common.arabicOption">🇸🇦 Arabic</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-header">
+                    <h2 data-i18n="login.heading">Welcome back</h2>
+                    <p data-i18n="login.subheading">Please enter your details to sign in.</p>
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+
+                <form class="auth-form" id="loginForm">
+                    <div class="input-group">
+                        <label for="email" data-i18n="login.form.email">Email address</label>
+                        <input type="email" id="email" data-i18n-placeholder="login.form.emailPlaceholder" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-row">
+                            <label for="password" data-i18n="login.form.password">Password</label>
+                            <a href="#" class="forgot-link" data-i18n="login.form.forgotPassword">Forgot password?</a>
+                        </div>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" data-i18n-placeholder="login.form.passwordPlaceholder" placeholder="Enter password" required>
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-continue" data-i18n="login.form.continue">Continue</button>
+                </form>
+
+                <div class="signup-footer">
+                    <span data-i18n="login.signup">Don't have an account? Sign up</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', email);
+                formData.append('password', password);
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access_token);
+                    
+                    // Use i18n for success message
+                    const successMessage = typeof i18n !== 'undefined' && i18n.t ? 
+                        i18n.t('login.messages.success') : 'Login successful! Redirecting...';
+                    successDiv.textContent = successMessage;
+                    successDiv.style.display = 'block';
+                    
+                    setTimeout(async () => {
+                        try {
+                            const userResponse = await fetch(`${API_BASE_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${data.access_token}` } });
+                            const user = await userResponse.json();
+                            
+                            // Redirect internal staff to admin panel
+                            if (['admin', 'salesman', 'accountant', 'technical'].includes(user.role)) {
+                                window.location.href = 'admin.html';
+                                return;
+                            }
+                            
+                            // Regular users check subscription
+                            const subResponse = await fetch(`${API_BASE_URL}/auth/me/subscription`, { headers: { 'Authorization': `Bearer ${data.access_token}` } });
+                            const subscription = await subResponse.json();
+                            
+                            window.location.href = subscription.has_access ? 'client_home.html' : 'dashboard.html';
+                        } catch (error) {
+                            window.location.href = 'dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    // Check if it's a rate limit error
+                    if (response.status === 429 && data.error) {
+                        // Convert snake_case to camelCase for i18n lookup
+                        // too_many_login_attempts -> tooManyLoginAttempts
+                        const camelCaseError = data.error.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+                        const errorKey = `errors.${camelCaseError}`;
+                        const translatedError = typeof i18n !== 'undefined' && i18n.t ? i18n.t(errorKey) : null;
+                        const errorMessage = translatedError && translatedError !== errorKey ? 
+                            translatedError : data.message;
+                        errorDiv.textContent = errorMessage;
+                    } else {
+                        // Use i18n for general error message
+                        const errorMessage = typeof i18n !== 'undefined' && i18n.t ? 
+                            i18n.t('login.messages.error') : 'Login failed. Please try again.';
+                        errorDiv.textContent = data.detail || data.message || errorMessage;
+                    }
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                // Use i18n for network error message
+                const networkErrorMessage = typeof i18n !== 'undefined' && i18n.t ? 
+                    i18n.t('login.messages.networkError') : 'Network error. Please make sure the API server is running.';
+                errorDiv.textContent = networkErrorMessage;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

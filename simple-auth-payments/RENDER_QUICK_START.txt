@@ -1,0 +1,39 @@
+🚀 RENDER DEPLOYMENT - QUICK STEPS
+=====================================
+
+1. PUSH TO GITHUB
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+
+2. RENDER SETUP
+   → Go to render.com
+   → Sign up with GitHub
+   → New + → Blueprint
+   → Select your repo
+   → Click "Apply"
+
+3. SET ENVIRONMENT VARIABLES (in Render Dashboard)
+   DATABASE_URL=sqlite:///./prod.db
+   JWT_SECRET_KEY=<generate-random-key>
+   STRIPE_SECRET_KEY=sk_live_your_key
+   STRIPE_WEBHOOK_SECRET=whsec_your_secret
+
+4. GENERATE JWT SECRET
+   python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+5. UPDATE CORS (after deployment)
+   Edit main.py → allow_origins
+   Add: "https://your-app-name.onrender.com"
+   Commit & push
+
+6. YOUR LIVE URL
+   https://your-app-name.onrender.com
+
+⚠️ FREE TIER NOTES:
+- Service sleeps after 15 min → first request slow
+- SQLite data lost on restart → use PostgreSQL for production
+- 750 hours/month free
+
+📖 Full guide: RENDER_DEPLOYMENT_GUIDE.md

@@ -1,0 +1,11 @@
+</li>
+                        <li><span class="feat-icon">📑</span> Weekly Performance Reports</li>
+                        <li><span class="feat-icon">📋</span> Menu Updates in App Weekly</li>
+                        <li><span class="feat-icon">⚡</span>  Technical Support During Work Hours</li>
+                        <li><span class="feat-icon">📣</span>  Sponsored Ads & Advanced Marketing</li>
+                        <li><span class="feat-icon">📊</span>  Business Analytics & Profit Strategy Optimization</li>
+                        <li><span class="feat-icon">🎨</span>Menu Design – Monthly Adjustments</li>
+                        
+                        
+                        
+                    </ul>

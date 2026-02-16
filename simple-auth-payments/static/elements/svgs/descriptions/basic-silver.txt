@@ -1,0 +1,10 @@
+</li>
+                        <li><span class="feat-icon">📑</span> Weekly Performance Reports</li>
+                        <li><span class="feat-icon">📋</span> Menu Updates in App Monthly</li>
+                        <li><span class="feat-icon">⚡</span>  Technical Support During Work Hours</li>
+                        <li><span class="feat-icon">📌 </span>  Basic Marketing Plan </li>
+                        <li><span class="feat-icon">🎨</span>Menu Design&nbsp;<b>-Once</b>&nbsp;&nbsp;at subscription start</li>
+                        
+                        
+                        
+                    </ul>
