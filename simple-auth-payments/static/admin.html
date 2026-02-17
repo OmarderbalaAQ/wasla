@@ -103,6 +103,7 @@
             <div class="tab" onclick="switchTab('bundles', this)">Bundles</div>
             <div class="tab" onclick="switchTab('discounts', this)">Discounts</div>
             <div class="tab" onclick="switchTab('leads', this)">Leads</div>
+            <div class="tab" onclick="switchTab('backup', this)">🔒 Backup</div>
         </div>
 
         <div id="users-tab" class="tab-content active">
@@ -273,6 +274,48 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Backup Tab -->
+        <div id="backup-tab" class="tab-content">
+            <div class="section">
+                <h2>🔒 Database Backup & Restore</h2>
+                <p style="color: #666; margin-bottom: 24px;">Create backups of your database and restore from previous backups. Only Admin and Technical users can access this feature.</p>
+                
+                <!-- Backup Actions -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                    <h3 style="margin: 0 0 16px 0; color: #2E4275; font-size: 18px;">Create New Backup</h3>
+                    <button onclick="createBackup()" class="btn-primary btn-small" style="padding: 10px 20px; font-size: 14px;">
+                        📦 Create Backup Now
+                    </button>
+                    <p style="margin: 12px 0 0 0; font-size: 13px; color: #666;">
+                        Creates a timestamped backup of the current database. Old backups are automatically cleaned up (keeps last 10).
+                    </p>
+                </div>
+                
+                <!-- Backup List -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: #2E4275; font-size: 18px;">Available Backups</h3>
+                        <button onclick="loadBackups()" class="btn-small btn-warning">🔄 Refresh List</button>
+                    </div>
+                    
+                    <div id="backupsList" style="background: white; border: 1px solid #ddd; border-radius: 8px; min-height: 200px;">
+                        <p style="padding: 40px; text-align: center; color: #999;">Loading backups...</p>
+                    </div>
+                </div>
+                
+                <!-- Warning -->
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 16px; border-radius: 8px; margin-top: 24px;">
+                    <strong style="color: #856404;">⚠️ Important:</strong>
+                    <ul style="margin: 8px 0 0 20px; color: #856404;">
+                        <li>Restoring a backup will replace your current database</li>
+                        <li>A safety backup is created before restore</li>
+                        <li>You may need to restart the application after restore</li>
+                        <li>Backups are stored locally and not included in deployments</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -2087,6 +2130,128 @@
         
         function logout() { localStorage.removeItem('access_token'); window.location.href = 'login.html'; }
         fetchAdminData();
+
+        // ============================================================================
+        // BACKUP FUNCTIONS
+        // ============================================================================
+
+        async function createBackup() {
+            if (!confirm('Create a new database backup?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/backup/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(`✅ Backup created successfully!\n\nFilename: ${data.backup.filename}\nSize: ${(data.backup.size_bytes / 1024).toFixed(2)} KB\n\nOld backups cleaned: ${data.cleanup.deleted}`);
+                    loadBackups();
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Failed to create backup: ${error.detail}`);
+                }
+            } catch (error) {
+                alert(`❌ Error creating backup: ${error.message}`);
+            }
+        }
+
+        async function loadBackups() {
+            const backupsList = document.getElementById('backupsList');
+            backupsList.innerHTML = '<p style="padding: 40px; text-align: center; color: #999;">Loading backups...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/backup/list`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.backups.length === 0) {
+                        backupsList.innerHTML = '<p style="padding: 40px; text-align: center; color: #999;">No backups available</p>';
+                        return;
+                    }
+                    
+                    let html = '<table style="width: 100%;"><thead><tr><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Filename</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Date</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Size</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Actions</th></tr></thead><tbody>';
+                    
+                    data.backups.forEach((backup, index) => {
+                        const sizeKB = (backup.size_bytes / 1024).toFixed(2);
+                        const isLatest = index === 0;
+                        
+                        html += `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">
+                                    ${backup.filename}
+                                    ${isLatest ? '<span class="badge badge-success" style="margin-left: 8px;">Latest</span>' : ''}
+                                </td>
+                                <td style="padding: 12px;">${backup.date}</td>
+                                <td style="padding: 12px;">${sizeKB} KB</td>
+                                <td style="padding: 12px;">
+                                    <button onclick="restoreBackup('${backup.filename}')" class="btn-small btn-warning">
+                                        🔄 Restore
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</tbody></table>';
+                    backupsList.innerHTML = html;
+                } else {
+                    backupsList.innerHTML = '<p style="padding: 40px; text-align: center; color: #dc3545;">Failed to load backups</p>';
+                }
+            } catch (error) {
+                backupsList.innerHTML = '<p style="padding: 40px; text-align: center; color: #dc3545;">Error loading backups</p>';
+            }
+        }
+
+        async function restoreBackup(filename) {
+            if (!confirm(`⚠️ WARNING: This will replace your current database with the backup:\n\n${filename}\n\nA safety backup will be created before restore.\n\nAre you sure you want to continue?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/backup/restore/${filename}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(`✅ ${data.message}\n\nRestored from: ${filename}\n\nPlease refresh the page or restart the application.`);
+                    
+                    // Optionally reload the page after a delay
+                    setTimeout(() => {
+                        if (confirm('Reload the page now?')) {
+                            window.location.reload();
+                        }
+                    }, 2000);
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Failed to restore backup: ${error.detail}`);
+                }
+            } catch (error) {
+                alert(`❌ Error restoring backup: ${error.message}`);
+            }
+        }
+
+        // Load backups when backup tab is opened
+        document.addEventListener('DOMContentLoaded', function() {
+            const backupTab = document.querySelector('.tab[onclick*="backup"]');
+            if (backupTab) {
+                backupTab.addEventListener('click', function() {
+                    loadBackups();
+                });
+            }
+        });
     </script>
 </body>
 </html>

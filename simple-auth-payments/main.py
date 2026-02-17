@@ -127,6 +127,20 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.on_event("startup")
 def seed_bundles():
     """Seed initial bundles if they don't exist"""
+    from utils.backup import BackupManager
+    
+    # Check database and restore if empty
+    backup_manager = BackupManager()
+    restore_status = backup_manager.check_and_restore_if_empty()
+    
+    if restore_status["action"] == "restored":
+        print(f"✓ Database restored: {restore_status['reason']}")
+        print(f"  Details: {restore_status['details']}")
+    elif restore_status["action"] == "none" and restore_status["reason"] == "database_ok":
+        print(f"✓ Database OK: {restore_status['details']}")
+    else:
+        print(f"⚠ Database check: {restore_status['reason']}")
+    
     db = SessionLocal()
     try:
         bundle_count = db.query(models.Bundle).count()

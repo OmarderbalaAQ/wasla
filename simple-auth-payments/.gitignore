@@ -64,7 +64,8 @@ logs/
 *.log.*
 
 # Backups
-backups/
+# Note: backups/ folder is kept for database backups
+# Only ignore .bak and .backup files
 *.bak
 *.backup
 

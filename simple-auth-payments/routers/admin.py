@@ -7,6 +7,7 @@ import models
 from datetime import datetime
 from utils.bundle_helpers import get_logo_options, get_description_options, get_svg_html, get_predefined_description
 from schemas import LeadAssignmentCreate, LeadAssignmentResponse
+from utils.backup import BackupManager
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -654,3 +655,82 @@ def get_salesmen(
         "email": s.email,
         "full_name": s.full_name
     } for s in salesmen]
+
+
+# Database Backup Endpoints
+
+@router.post("/backup/create")
+def create_database_backup(
+    current_user: models.User = Depends(require_admin_or_technical)
+):
+    """
+    Create a new database backup (admin/technical only).
+    Returns backup information.
+    """
+    try:
+        backup_manager = BackupManager()
+        result = backup_manager.create_backup()
+        
+        # Clean up old backups (keep last 10)
+        cleanup = backup_manager.delete_old_backups(keep_count=10)
+        
+        return {
+            "success": True,
+            "backup": result,
+            "cleanup": cleanup
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to create backup: {str(e)}"
+        )
+
+
+@router.get("/backup/list")
+def list_database_backups(
+    current_user: models.User = Depends(require_admin_or_technical)
+):
+    """
+    List all available database backups (admin/technical only).
+    """
+    try:
+        backup_manager = BackupManager()
+        backups = backup_manager.list_backups()
+        
+        return {
+            "success": True,
+            "count": len(backups),
+            "backups": backups
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to list backups: {str(e)}"
+        )
+
+
+@router.post("/backup/restore/{backup_filename}")
+def restore_database_backup(
+    backup_filename: str,
+    current_user: models.User = Depends(require_admin_or_technical)
+):
+    """
+    Restore database from a specific backup (admin/technical only).
+    WARNING: This will replace the current database!
+    """
+    try:
+        backup_manager = BackupManager()
+        result = backup_manager.restore_backup(backup_filename)
+        
+        return {
+            "success": True,
+            "message": "Database restored successfully. Please restart the application.",
+            "details": result
+        }
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to restore backup: {str(e)}"
+        )
