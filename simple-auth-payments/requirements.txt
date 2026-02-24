@@ -13,3 +13,4 @@ slowapi
 hypothesis
 pytest
 gunicorn
+email-validator
