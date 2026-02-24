@@ -95,8 +95,7 @@
     </div>
 
     <script>
-        // Automatically detect the API base URL based on current location
-        const API_BASE_URL = window.location.origin;
+        const API_BASE_URL = 'http://localhost:8000';
         const token = localStorage.getItem('access_token');
         if (!token) { window.location.href = 'login.html'; }
 
