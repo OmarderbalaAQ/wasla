@@ -1,0 +1,113 @@
+╔══════════════════════════════════════════════════════════════╗
+║            RAILWAY DEPLOYMENT - QUICK SETUP                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ CORS UPDATED FOR RAILWAY!
+
+Your domain: https://wasla-production.up.railway.app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 SETUP STEPS:
+
+1. SET ENVIRONMENT VARIABLES IN RAILWAY
+   ────────────────────────────────────
+   Go to: Railway Dashboard → Your Service → Variables
+
+   Add these:
+   ┌────────────────────────────────────────────────────────┐
+   │ JWT_SECRET_KEY = [generate with command below]         │
+   │ JWT_ALGORITHM = HS256                                  │
+   │ ACCESS_TOKEN_EXPIRE_MINUTES = 30                       │
+   │ STRIPE_SECRET_KEY = sk_test_your_key                   │
+   │ STRIPE_WEBHOOK_SECRET = whsec_your_secret              │
+   └────────────────────────────────────────────────────────┘
+
+   Generate JWT secret:
+   python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+2. COMMIT AND PUSH CHANGES
+   ────────────────────────
+   git add main.py
+   git commit -m "Update CORS for Railway deployment"
+   git push origin main
+
+3. RAILWAY AUTO-DEPLOYS
+   ─────────────────────
+   Watch deployment in Railway dashboard
+
+4. CHECK LOGS
+   ──────────
+   Look for:
+   ✓ Created default admin user: admin@admin.com / admin123
+   ✓ Seeded initial bundles
+   INFO: Uvicorn running on 0.0.0.0:8080
+
+5. TEST YOUR SITE
+   ──────────────
+   Visit: https://wasla-production.up.railway.app/
+   Login: https://wasla-production.up.railway.app/static/login.html
+   
+   Credentials:
+   Email: admin@admin.com
+   Password: admin123
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 WHAT WAS CHANGED:
+
+File: main.py
+─────────────
+Updated CORS to include Railway domains:
+✓ https://wasla-production.up.railway.app
+✓ http://wasla-production.up.railway.app
+✓ https://wasla.railway.internal
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ IMPORTANT NOTES:
+
+• Railway provides DATABASE_URL automatically (PostgreSQL)
+• Port 8080 is configured correctly
+• Default admin will be created on first startup
+• Change admin password after first login!
+• Frontend uses window.location.origin (works automatically)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 TROUBLESHOOTING:
+
+Issue: "Incorrect email or password"
+───────────────────────────────────
+Run in Railway Shell:
+python diagnose_deployment.py
+
+If no users found:
+python create_production_admin.py
+
+Issue: "Network error"
+─────────────────────
+Check browser console (F12) for CORS errors
+Verify domain matches in main.py
+
+Issue: Port binding error
+────────────────────────
+Update start command:
+uvicorn main:app --host 0.0.0.0 --port $PORT
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DETAILED GUIDES:
+
+• RAILWAY_DEPLOYMENT_GUIDE.md - Complete Railway guide
+• DEPLOYMENT_LOGIN_SOLUTION.md - Admin user setup
+• DEPLOYMENT_DATABASE_SETUP.md - Database configuration
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ READY TO DEPLOY!
+
+Just set environment variables and push to GitHub.
+Railway will handle the rest! 🚀
+
+╚══════════════════════════════════════════════════════════════╝

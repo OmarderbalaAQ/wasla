@@ -113,8 +113,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:8000",  # Development
         "http://127.0.0.1:8000",  # Development
-        "https://wasla.example.com",  # TODO: Replace with actual domain
-        "https://api.wasla.example.com",  # TODO: Replace with actual API domain
+        "https://wasla-production.up.railway.app",  # Railway production
+        "http://wasla-production.up.railway.app",  # Railway production (HTTP)
+        "https://wasla.railway.internal",  # Railway internal
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
