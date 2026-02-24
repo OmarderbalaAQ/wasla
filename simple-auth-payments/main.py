@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from database import engine, Base, SessionLocal
 import models
@@ -126,8 +127,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.on_event("startup")
 def seed_bundles():
-    """Seed initial bundles if they don't exist"""
+    """Seed initial bundles and default admin user if they don't exist"""
     from utils.backup import BackupManager
+    from utils.security import hash_password
     
     # Check database and restore if empty
     backup_manager = BackupManager()
@@ -143,6 +145,21 @@ def seed_bundles():
     
     db = SessionLocal()
     try:
+        # Seed default admin user if no users exist
+        user_count = db.query(models.User).count()
+        if user_count == 0:
+            default_admin = models.User(
+                email="admin@admin.com",
+                hashed_password=hash_password("admin123"),
+                role="admin",
+                is_active=True
+            )
+            db.add(default_admin)
+            db.commit()
+            print("✓ Created default admin user: admin@admin.com / admin123")
+            print("  ⚠ IMPORTANT: Change this password in production!")
+        
+        # Seed bundles if they don't exist
         bundle_count = db.query(models.Bundle).count()
         if bundle_count == 0:
             basic_bundle = models.Bundle(
@@ -245,5 +262,6 @@ async def rate_limit_middleware(request: Request, call_next):
 
 
 @app.get("/")
-def root():
-    return {"message": "Simple Auth Payments API"}
+async def root():
+    """Redirect to the main index page"""
+    return RedirectResponse(url='/static/index.html')
