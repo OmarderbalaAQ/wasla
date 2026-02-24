@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from database import engine, Base, SessionLocal
 import models
@@ -245,5 +246,6 @@ async def rate_limit_middleware(request: Request, call_next):
 
 
 @app.get("/")
-def root():
-    return {"message": "Simple Auth Payments API"}
+async def read_index():
+    """Serve the main index.html page"""
+    return FileResponse('static/index.html')
