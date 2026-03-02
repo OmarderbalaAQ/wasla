@@ -1,3 +1,12 @@
+import sys
+import os
+from pathlib import Path
+
+# Ensure project root is in Python path for deployment compatibility
+project_root = Path(__file__).parent.absolute()
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
