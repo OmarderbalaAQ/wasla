@@ -12,6 +12,7 @@
     <script src="js/language-switcher.js"></script>
     <script src="js/page-translator.js"></script>
     <script src="js/dynamic-content-i18n.js"></script>
+    <script src="js/hamburger-menu.js"></script>
     <style>
         .sub-headline {
             color: #2E4275;
@@ -22,14 +23,7 @@
             margin-bottom: 20px;
         }
         
-        .main-headline {
-            font-size: 48px;
-            line-height: 1.1;
-            font-weight: 900;
-            color: #000;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
+        
     </style>
 </head>
 <body>
@@ -66,9 +60,51 @@
                 </div>
                 <a href="login.html" class="btn btn-outline" data-i18n="common.login">Log in</a>
                 <a href="form.html" class="btn btn-primary" data-i18n="common.getStarted">Get Started</a>
+                
+                <!-- Hamburger Menu Button (Mobile Only) -->
+                <button class="hamburger-btn" aria-label="Toggle menu">
+                    <span class="hamburger-icon">
+                        <img src="elements/hamburger/burger-menu-not opened.svg" alt="" class="icon-closed">
+                        <img src="elements/hamburger/burger-menu-right-opened.svg" alt="" class="icon-open">
+                    </span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <!-- Close button inside overlay -->
+        <button class="mobile-menu-close" aria-label="Close menu">
+            <span class="hamburger-icon open">
+                <img src="elements/hamburger/burger-menu-not opened.svg" alt="" class="icon-closed">
+                <img src="elements/hamburger/burger-menu-right-opened.svg" alt="" class="icon-open">
+            </span>
+        </button>
+        
+        <div class="mobile-menu-content">
+            <nav class="mobile-nav-links">
+                <a href="index.html" data-i18n="navigation.home">Home</a>
+                <a href="pricing-non registered.html" data-i18n="navigation.pricing">Pricing</a>
+                <a href="solutions.html" class="active" data-i18n="navigation.solutions">Solutions</a>
+                <a href="FAQ.html" data-i18n="navigation.faq">FAQ</a>
+            </nav>
+            
+            <div class="mobile-menu-actions">
+                <a href="form.html" class="btn btn-primary" data-i18n="common.getStarted">Get Started</a>
+            </div>
+            
+            <div class="mobile-lang-selector lang-dropdown-wrapper">
+                <div class="lang-selector">
+                    <span class="globe-icon">🌐</span> <span data-i18n="common.language">Language</span>
+                </div>
+                <ul class="lang-list">
+                    <li><a href="#" data-i18n="common.englishOption" data-i18n-prefix="🇺🇸 ">English</a></li>
+                    <li><a href="#" data-i18n="common.arabicOption" data-i18n-prefix="🇸🇦 ">Arabic</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <section class="hero-section">
         <div class="hero-content">

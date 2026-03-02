@@ -91,10 +91,25 @@ class BackupManager:
         # Backup current database before restoring
         if os.path.exists(self.db_path):
             safety_backup = f"{self.db_path}.before_restore"
-            shutil.copy2(self.db_path, safety_backup)
+            try:
+                shutil.copy2(self.db_path, safety_backup)
+            except PermissionError:
+                # On Windows, if file is locked, wait a moment and retry
+                import time
+                time.sleep(0.5)
+                shutil.copy2(self.db_path, safety_backup)
         
         # Restore from backup
-        shutil.copy2(backup_path, self.db_path)
+        # On Windows, if the file is locked, this will fail
+        # The calling code should ensure all DB connections are closed first
+        try:
+            shutil.copy2(backup_path, self.db_path)
+        except PermissionError as e:
+            raise PermissionError(
+                "Cannot restore: database file is locked. "
+                "Please ensure all database connections are closed. "
+                f"Original error: {str(e)}"
+            )
         
         return {
             "success": True,
@@ -122,18 +137,29 @@ class BackupManager:
         # Check if database file exists
         if not os.path.exists(self.db_path):
             # Try to restore from latest backup
-            try:
-                result = self.restore_latest()
-                return {
-                    "action": "restored",
-                    "reason": "database_missing",
-                    "details": result
-                }
-            except FileNotFoundError:
+            latest = self.get_latest_backup()
+            if latest:
+                try:
+                    result = self.restore_latest()
+                    return {
+                        "action": "restored",
+                        "reason": "database_missing",
+                        "details": f"Restored from {latest['filename']}",
+                        "backup_used": latest['filename']
+                    }
+                except Exception as e:
+                    return {
+                        "action": "failed",
+                        "reason": "restore_failed",
+                        "details": f"Failed to restore: {str(e)}",
+                        "will_create_new": True
+                    }
+            else:
                 return {
                     "action": "none",
                     "reason": "no_backups_available",
-                    "details": "Database missing and no backups found"
+                    "details": "Database missing and no backups found. Will create new database.",
+                    "will_create_new": True
                 }
         
         # Check if database has essential data
@@ -141,27 +167,39 @@ class BackupManager:
         try:
             # Check for users (at least one admin should exist)
             user_count = db.query(models.User).count()
+            bundle_count = db.query(models.Bundle).count()
             
             if user_count == 0:
                 # Database is empty, try to restore
-                try:
-                    result = self.restore_latest()
-                    return {
-                        "action": "restored",
-                        "reason": "database_empty",
-                        "details": result
-                    }
-                except FileNotFoundError:
+                latest = self.get_latest_backup()
+                if latest:
+                    try:
+                        result = self.restore_latest()
+                        return {
+                            "action": "restored",
+                            "reason": "database_empty_no_users",
+                            "details": f"Restored from {latest['filename']}",
+                            "backup_used": latest['filename']
+                        }
+                    except Exception as e:
+                        return {
+                            "action": "failed",
+                            "reason": "restore_failed",
+                            "details": f"Failed to restore: {str(e)}",
+                            "will_seed_new": True
+                        }
+                else:
                     return {
                         "action": "none",
                         "reason": "no_backups_available",
-                        "details": "Database empty and no backups found"
+                        "details": "Database empty (no users) and no backups found. Will seed new data.",
+                        "will_seed_new": True
                     }
             
             return {
                 "action": "none",
                 "reason": "database_ok",
-                "details": f"Database has {user_count} users"
+                "details": f"Database has {user_count} users and {bundle_count} bundles"
             }
         
         finally:

@@ -734,3 +734,292 @@ def restore_database_backup(
             status_code=500,
             detail=f"Failed to restore backup: {str(e)}"
         )
+
+
+# Backup Management Endpoints
+from fastapi import UploadFile, File
+from utils.backup_validator import BackupValidator
+import shutil
+import os
+
+@router.post("/backups/upload")
+async def upload_backup(
+    file: UploadFile = File(...),
+    name: str = None,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    """Upload and validate backup file (admin only)"""
+    import time
+    
+    try:
+        # Validate file type
+        if not file.filename.endswith('.db'):
+            raise HTTPException(status_code=400, detail="Only .db files allowed")
+        
+        # Check file size (50MB limit)
+        file.file.seek(0, 2)
+        file_size = file.file.tell()
+        file.file.seek(0)
+        
+        if file_size > 50 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File too large (max 50MB)")
+        
+        # Generate filename
+        if name:
+            backup_filename = f"{name}.db" if not name.endswith('.db') else name
+        else:
+            backup_filename = file.filename
+        
+        # Save temp file
+        temp_path = f"backups/temp_{backup_filename}"
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Validate backup
+        validator = BackupValidator()
+        validation = validator.validate_backup(temp_path)
+        
+        # Small delay to ensure Windows releases file lock after validation
+        time.sleep(0.2)
+        
+        if not validation["valid"]:
+            try:
+                os.remove(temp_path)
+            except PermissionError:
+                # If still locked, wait and retry
+                time.sleep(0.5)
+                os.remove(temp_path)
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid backup: {validation.get('error', 'Schema mismatch')}"
+            )
+        
+        # Move to final location
+        final_path = f"backups/{backup_filename}"
+        if os.path.exists(final_path):
+            try:
+                os.remove(final_path)
+            except PermissionError:
+                # If locked, wait and retry
+                time.sleep(0.5)
+                os.remove(final_path)
+        
+        try:
+            os.rename(temp_path, final_path)
+        except PermissionError:
+            # If rename fails due to lock, wait and retry
+            time.sleep(0.5)
+            os.rename(temp_path, final_path)
+        
+        return {
+            "success": True,
+            "filename": backup_filename,
+            "validation": validation,
+            "size_bytes": file_size
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Clean up temp file if it exists
+        temp_path = f"backups/temp_{file.filename}"
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except:
+                pass  # Ignore cleanup errors
+        raise HTTPException(
+            status_code=500,
+            detail=f"Upload failed: {str(e)}"
+        )
+
+
+@router.get("/backups/list")
+def list_backups(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    """List all backups (admin only)"""
+    manager = BackupManager()
+    backups = manager.list_backups()
+    
+    # Add validation status
+    validator = BackupValidator()
+    for backup in backups:
+        validation = validator.validate_backup(backup["path"])
+        backup["validated"] = validation["valid"]
+        backup["compatible"] = validation.get("compatible", False)
+    
+    return {"backups": backups}
+
+
+@router.post("/backups/restore/{backup_name}")
+def restore_backup(
+    backup_name: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    """Restore from backup (admin only)"""
+    manager = BackupManager()
+    
+    # Validate backup first
+    backup_path = f"backups/{backup_name}"
+    if not os.path.exists(backup_path):
+        raise HTTPException(status_code=404, detail="Backup not found")
+    
+    validator = BackupValidator()
+    validation = validator.validate_backup(backup_path)
+    
+    if not validation["valid"]:
+        raise HTTPException(status_code=400, detail="Backup is not valid")
+    
+    # Create safety backup
+    try:
+        safety = manager.create_backup()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to create safety backup: {str(e)}"
+        )
+    
+    # CRITICAL: Close the database connection before restore
+    # This releases the file lock on Windows
+    db.close()
+    
+    # Restore
+    try:
+        result = manager.restore_backup(backup_name)
+        return {
+            "success": True,
+            "restored_from": backup_name,
+            "safety_backup": safety["filename"],
+            "message": "Database restored successfully. Please refresh the page."
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Restore failed: {str(e)}"
+        )
+
+
+@router.get("/backups/validate/{backup_name}")
+def validate_backup_endpoint(
+    backup_name: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    """Validate specific backup (admin only)"""
+    backup_path = f"backups/{backup_name}"
+    if not os.path.exists(backup_path):
+        raise HTTPException(status_code=404, detail="Backup not found")
+    
+    validator = BackupValidator()
+    validation = validator.validate_backup(backup_path)
+    
+    return validation
+
+
+
+# CSV Lead Import Endpoints
+from utils.csv_importer import CSVImporter
+from fastapi.responses import StreamingResponse
+
+@router.post("/leads/import/validate")
+async def validate_csv_import(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    """Validate CSV file and detect duplicates (admin only)"""
+    # Validate file type
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only .csv files allowed")
+    
+    # Check file size (10MB limit)
+    content = await file.read()
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 10MB)")
+    
+    # Decode content
+    try:
+        file_content = content.decode('utf-8')
+    except:
+        raise HTTPException(status_code=400, detail="Invalid file encoding (use UTF-8)")
+    
+    # Validate format
+    importer = CSVImporter(db)
+    format_check = importer.validate_csv_format(file_content)
+    
+    if not format_check["valid"]:
+        raise HTTPException(status_code=400, detail=format_check["error"])
+    
+    # Parse CSV
+    parse_result = importer.parse_csv(file_content)
+    leads = parse_result["leads"]
+    errors = parse_result["errors"]
+    
+    # Detect duplicates
+    duplicate_result = importer.detect_duplicates(leads)
+    
+    # Get preview (first 10 rows)
+    preview = leads[:10]
+    for p in preview:
+        p.pop('row_number', None)
+    
+    return {
+        "success": True,
+        "total_rows": len(leads) + len(errors),
+        "valid_rows": len(leads),
+        "invalid_rows": len(errors),
+        "errors": errors,
+        "duplicates": duplicate_result,
+        "preview": preview
+    }
+
+
+@router.post("/leads/import/execute")
+async def execute_csv_import(
+    file: UploadFile = File(...),
+    duplicate_action: str = "skip",
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    """Execute CSV import with duplicate handling (admin only)"""
+    # Validate duplicate_action
+    if duplicate_action not in ["skip", "overwrite", "import_all"]:
+        raise HTTPException(status_code=400, detail="Invalid duplicate_action")
+    
+    # Read and parse
+    content = await file.read()
+    file_content = content.decode('utf-8')
+    
+    importer = CSVImporter(db)
+    parse_result = importer.parse_csv(file_content)
+    leads = parse_result["leads"]
+    
+    if not leads:
+        raise HTTPException(status_code=400, detail="No valid leads found")
+    
+    # Import
+    result = importer.import_leads(leads, duplicate_action)
+    
+    return {
+        "success": True,
+        "results": result
+    }
+
+
+@router.get("/leads/import/template")
+def download_csv_template(
+    current_user: models.User = Depends(require_admin)
+):
+    """Download CSV template (admin only)"""
+    template = "first_name,last_name,email,phone,country_code,country,business_name,num_locations,referral_source,status\n"
+    template += "John,Doe,john@example.com,1234567890,+1,USA,Acme Corp,5,Website,new\n"
+    template += "Jane,Smith,jane@example.com,9876543210,+1,USA,Tech Inc,1,Referral,new\n"
+    
+    return StreamingResponse(
+        iter([template]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=leads_template.csv"}
+    )

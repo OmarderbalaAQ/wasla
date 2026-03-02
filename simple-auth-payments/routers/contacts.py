@@ -198,22 +198,23 @@ def export_contacts(
     
     writer = csv.writer(output)
     
-    # Write header row
+    # Write header row (using import-compatible column names)
     writer.writerow([
-        'ID',
-        'First Name',
-        'Last Name',
-        'Email',
-        'Phone',
-        'Country',
-        'Business Name',
-        'Locations',
-        'Referral Source',
-        'Marketing Consent',
-        'Language',
-        'Status',
-        'Created At',
-        'Updated At'
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'country_code',
+        'country',
+        'business_name',
+        'num_locations',
+        'referral_source',
+        'marketing_consent',
+        'language_preference',
+        'status',
+        'created_at',
+        'updated_at'
     ])
     
     # Write data rows
@@ -221,9 +222,6 @@ def export_contacts(
         # Format dates in readable format (YYYY-MM-DD HH:MM:SS)
         created_at_formatted = contact.created_at.strftime('%Y-%m-%d %H:%M:%S')
         updated_at_formatted = contact.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # Phone number is stored separately from country code
-        phone_formatted = f"{contact.country_code} {contact.phone}"
         
         # Format marketing consent as Yes/No
         marketing_consent_formatted = "Yes" if contact.marketing_consent else "No"
@@ -233,7 +231,8 @@ def export_contacts(
             contact.first_name,
             contact.last_name,
             contact.email,
-            phone_formatted,
+            contact.phone,
+            contact.country_code,
             contact.country,
             contact.business_name,
             contact.num_locations,

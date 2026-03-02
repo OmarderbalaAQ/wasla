@@ -42,6 +42,9 @@ venv.bak/
 dev.db
 test_*.db
 
+# But keep backup files in backups/ folder
+!backups/*.db
+
 # IDE
 .vscode/
 .idea/
@@ -64,10 +67,12 @@ logs/
 *.log.*
 
 # Backups
-# Note: backups/ folder is kept for database backups
+# Note: backups/ folder and its .db files are kept for database backups
 # Only ignore .bak and .backup files
 *.bak
 *.backup
+# Keep backup database files
+!backups/*.db
 
 # Documentation (development/testing docs - keep essential docs)
 *_SUMMARY.md

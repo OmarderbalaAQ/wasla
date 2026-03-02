@@ -12,82 +12,10 @@
     <script src="js/language-switcher.js"></script>
     <script src="js/page-translator.js"></script>
     <script src="js/dynamic-content-i18n.js"></script>
-    <style>
-        .password-wrapper { position: relative; }
-        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #999; }
-        .btn-continue { width: 100%; padding: 16px; background: var(--brand-primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-        .btn-continue:hover { background: var(--brand-hover); }
-        .signup-footer { text-align: center; margin-top: 24px; color: var(--text-muted); }
-        .signup-footer a { color: var(--brand-primary); text-decoration: none; font-weight: 600; }
-        .signup-footer a:hover { text-decoration: underline; }
-        .error-message { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
-        .success-message { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
-        @media (max-width: 768px) { .login-image-side { display: none; } }
-    </style>
-
-    <style>
-        .login-page {
-            display: flex;
-            min-height: 100vh;
-            background-color: #fff;
-        }
-
-        /* --- Left Side: Immersive Image --- */
-        .login-image-side {
-            flex: 1.2;
-            position: relative;
-            background-image: url("elements/dd.jpg"); 
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-repeat: no-repeat;
-        }
-
-        /* Gradient overlay */
-        .brand-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(46, 66, 117, 0.9) 0%, rgba(50, 76, 143, 0.7) 100%);
-            padding: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* NEW: Styles to make the link invisible/non-disruptive */
-        .logo-link {
-            display: inline-block;
-            width: fit-content;
-            text-decoration: none;
-            line-height: 0; /* Prevents tiny gaps below the logo */
-        }
-
-        .overlay-logo {
-            width: 150px;
-            display: block; /* Ensures it fills the link container correctly */
-        }
-
-        .overlay-text h1 {
-            color: #fff;
-            font-size: 48px;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        .overlay-text p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 18px;
-            max-width: 420px;
-            line-height: 1.6;
-        }
-    </style>
 </head>
 <body>
-    <div class="login-page">
+    <!-- Desktop/Tablet Layout -->
+    <div class="login-page login-desktop">
         <div class="login-image-side">
             <div class="brand-overlay">
                 <a href="index.html" class="logo-link">
@@ -155,22 +83,60 @@
         </div>
     </div>
 
+    <!-- Mobile Layout -->
+    <div class="login-page login-mobile">
+        <div class="login-mobile-container">
+            <div class="login-mobile-logo">
+                <a href="index.html">
+                    <img src="elements\white.png" alt="WASLA logo">
+                </a>
+            </div>
+
+            <div class="login-mobile-header">
+                <h1 data-i18n="login.mobile.title">Hi There!</h1>
+                <p data-i18n="login.mobile.subtitle">Please enter required details.</p>
+            </div>
+
+            <div class="login-mobile-separator">
+                <span data-i18n="login.mobile.or">Or</span>
+            </div>
+
+            <div id="error-message-mobile" class="error-message"></div>
+            <div id="success-message-mobile" class="success-message"></div>
+
+            <form class="login-mobile-form" id="loginFormMobile">
+                <div class="login-mobile-input-group">
+                    <input type="email" id="email-mobile" data-i18n-placeholder="login.form.emailPlaceholder" placeholder="Email address" required>
+                </div>
+                <div class="login-mobile-input-group">
+                    <input type="password" id="password-mobile" data-i18n-placeholder="login.form.passwordPlaceholder" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="login-mobile-btn" data-i18n="login.form.continue">Log In</button>
+            </form>
+
+            <div class="login-mobile-legal">
+                <a href="#" data-i18n="common.termsOfService">Terms of Service</a> | 
+                <a href="#" data-i18n="common.privacyPolicy">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Automatically detect the API base URL based on current location
         const API_BASE_URL = window.location.origin;
 
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-        });
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+            });
+        }
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('error-message');
-            const successDiv = document.getElementById('success-message');
-            
+        // Handle login for both forms
+        async function handleLogin(email, password, errorDiv, successDiv) {
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
 
@@ -190,7 +156,6 @@
                 if (response.ok) {
                     localStorage.setItem('access_token', data.access_token);
                     
-                    // Use i18n for success message
                     const successMessage = typeof i18n !== 'undefined' && i18n.t ? 
                         i18n.t('login.messages.success') : 'Login successful! Redirecting...';
                     successDiv.textContent = successMessage;
@@ -201,13 +166,11 @@
                             const userResponse = await fetch(`${API_BASE_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${data.access_token}` } });
                             const user = await userResponse.json();
                             
-                            // Redirect internal staff to admin panel
                             if (['admin', 'salesman', 'accountant', 'technical'].includes(user.role)) {
                                 window.location.href = 'admin.html';
                                 return;
                             }
                             
-                            // Regular users check subscription
                             const subResponse = await fetch(`${API_BASE_URL}/auth/me/subscription`, { headers: { 'Authorization': `Bearer ${data.access_token}` } });
                             const subscription = await subResponse.json();
                             
@@ -217,10 +180,7 @@
                         }
                     }, 1000);
                 } else {
-                    // Check if it's a rate limit error
                     if (response.status === 429 && data.error) {
-                        // Convert snake_case to camelCase for i18n lookup
-                        // too_many_login_attempts -> tooManyLoginAttempts
                         const camelCaseError = data.error.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
                         const errorKey = `errors.${camelCaseError}`;
                         const translatedError = typeof i18n !== 'undefined' && i18n.t ? i18n.t(errorKey) : null;
@@ -228,7 +188,6 @@
                             translatedError : data.message;
                         errorDiv.textContent = errorMessage;
                     } else {
-                        // Use i18n for general error message
                         const errorMessage = typeof i18n !== 'undefined' && i18n.t ? 
                             i18n.t('login.messages.error') : 'Login failed. Please try again.';
                         errorDiv.textContent = data.detail || data.message || errorMessage;
@@ -236,12 +195,31 @@
                     errorDiv.style.display = 'block';
                 }
             } catch (error) {
-                // Use i18n for network error message
                 const networkErrorMessage = typeof i18n !== 'undefined' && i18n.t ? 
                     i18n.t('login.messages.networkError') : 'Network error. Please make sure the API server is running.';
                 errorDiv.textContent = networkErrorMessage;
                 errorDiv.style.display = 'block';
             }
+        }
+
+        // Desktop form
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            await handleLogin(email, password, errorDiv, successDiv);
+        });
+
+        // Mobile form
+        document.getElementById('loginFormMobile').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email-mobile').value;
+            const password = document.getElementById('password-mobile').value;
+            const errorDiv = document.getElementById('error-message-mobile');
+            const successDiv = document.getElementById('success-message-mobile');
+            await handleLogin(email, password, errorDiv, successDiv);
         });
     </script>
 </body>

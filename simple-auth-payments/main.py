@@ -136,14 +136,26 @@ def seed_bundles():
     backup_manager = BackupManager()
     restore_status = backup_manager.check_and_restore_if_empty()
     
+    # Log restore status
     if restore_status["action"] == "restored":
-        print(f"✓ Database restored: {restore_status['reason']}")
+        print(f"✓ Database restored from backup")
+        print(f"  Reason: {restore_status['reason']}")
+        print(f"  Backup: {restore_status.get('backup_used', 'N/A')}")
         print(f"  Details: {restore_status['details']}")
-    elif restore_status["action"] == "none" and restore_status["reason"] == "database_ok":
-        print(f"✓ Database OK: {restore_status['details']}")
-    else:
-        print(f"⚠ Database check: {restore_status['reason']}")
+        # After successful restore, no need to seed
+        return
+    elif restore_status["action"] == "failed":
+        print(f"⚠ Database restore failed: {restore_status['details']}")
+        print(f"  Will create new database with default data...")
+    elif restore_status["action"] == "none":
+        if restore_status["reason"] == "database_ok":
+            print(f"✓ Database OK: {restore_status['details']}")
+            # Database is fine, but still check if we need to seed bundles
+        else:
+            print(f"⚠ No backups available: {restore_status['details']}")
+            print(f"  Will create new database with default data...")
     
+    # Seed default data if needed
     db = SessionLocal()
     try:
         # Seed default admin user if no users exist
@@ -179,6 +191,13 @@ def seed_bundles():
             db.add(pro_bundle)
             db.commit()
             print("✓ Seeded initial bundles")
+            
+            # Create a backup after seeding
+            try:
+                backup_result = backup_manager.create_backup()
+                print(f"✓ Created initial backup: {backup_result['filename']}")
+            except Exception as e:
+                print(f"⚠ Failed to create backup: {e}")
     finally:
         db.close()
 

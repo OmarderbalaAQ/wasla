@@ -12,6 +12,7 @@
     <script src="js/language-switcher.js"></script>
     <script src="js/page-translator.js"></script>
     <script src="js/dynamic-content-i18n.js"></script>
+    <script src="js/hamburger-menu.js"></script>
     <style>
         body { background-color: #f8f9fa; }
         .client-home { min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
@@ -21,14 +22,14 @@
         .subscription-status { background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 40px; border: 2px solid #e5e5e5; }
         .subscription-status.active { background: linear-gradient(135deg, #d4edda 0%, #e8f5e9 100%); border: 2px solid #28a745; }
         .subscription-status.expired { background: linear-gradient(135deg, #f8d7da 0%, #ffe5e5 100%); border: 2px solid #dc3545; }
-        .buttons-container { display: flex; flex-direction: column; gap: 16px; }
-        .btn-large { padding: 18px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: block; }
+        .buttons-container { display: flex; flex-direction: column; gap: 16px; align-items: center; width: 100%; }
+        .btn-large { padding: 18px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: block; width: 100%; text-align: center; }
         .btn-primary-large { background: #2E4275; color: white; }
         .btn-primary-large:hover:not(:disabled) { background: #324c8f; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(46, 66, 117, 0.3); }
         .btn-secondary-large { background: #6c757d; color: white; }
         .btn-secondary-large:hover { background: #5a6268; transform: translateY(-2px); }
         .btn-large:disabled { opacity: 0.5; cursor: not-allowed; }
-        .logout-link { margin-top: 24px; color: #2E4275; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .logout-link { margin-top: 5%; color: #2E4275; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; }
         .logout-link:hover { text-decoration: underline; }
         .status-badge { display: inline-block; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 15px; margin-bottom: 15px; }
         .status-badge.active { background: #28a745; color: white; }
@@ -42,7 +43,12 @@
         <div class="nav-container">
             <div class="logo">
                 <a href="client_home.html" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
-                    <span style="font-size: 24px; font-weight: 900; color: #2E4275;">Wasla</span>
+                    <img src="elements\Adobe Express - word_dot.png" 
+                         alt="WASLA logo"  
+                         style="height: clamp(26px, 4.5vw, 42px); 
+                                width: auto; 
+                                max-width: 100%;
+                                margin-top: 4px;">
                 </a>
             </div>
 
@@ -65,9 +71,51 @@
                 </div>
                 <span id="userEmailNav" style="margin-right: 15px; font-weight: 500; font-size: 14px;"></span>
                 <button class="btn btn-outline" onclick="logout()" data-i18n="common.logout">Log out</button>
+                
+                <!-- Hamburger Menu Button (Mobile Only) -->
+                <button class="hamburger-btn" aria-label="Toggle menu">
+                    <span class="hamburger-icon">
+                        <img src="elements/hamburger/burger-menu-not opened.svg" alt="" class="icon-closed">
+                        <img src="elements/hamburger/burger-menu-right-opened.svg" alt="" class="icon-open">
+                    </span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <!-- Close button inside overlay -->
+        <button class="mobile-menu-close" aria-label="Close menu">
+            <span class="hamburger-icon open">
+                <img src="elements/hamburger/burger-menu-not opened.svg" alt="" class="icon-closed">
+                <img src="elements/hamburger/burger-menu-right-opened.svg" alt="" class="icon-open">
+            </span>
+        </button>
+        
+        <div class="mobile-menu-content">
+            <nav class="mobile-nav-links">
+                <a href="index.html" data-i18n="clientHome.navigation.home">Home</a>
+                <a href="dashboard.html" data-i18n="clientHome.navigation.myPlans">My Plans</a>
+                <a href="solutions.html" data-i18n="clientHome.navigation.solutions">Solutions</a>
+                <a href="FAQ.html" data-i18n="clientHome.navigation.faq">FAQ</a>
+            </nav>
+            
+            <div class="mobile-menu-actions">
+                <button class="btn btn-primary" onclick="logout()" data-i18n="common.logout">Log out</button>
+            </div>
+            
+            <div class="mobile-lang-selector lang-dropdown-wrapper">
+                <div class="lang-selector">
+                    <span class="globe-icon">🌐</span> <span data-i18n="common.language">Language</span>
+                </div>
+                <ul class="lang-list">
+                    <li><a href="#" data-i18n="common.englishOption">🇺🇸 English</a></li>
+                    <li><a href="#" data-i18n="common.arabicOption">🇸🇦 Arabic</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <div class="client-home">
         <div class="home-container">
@@ -90,7 +138,7 @@
                 </a>
             </div>
 
-            <a href="#" onclick="logout()" class="logout-link" data-i18n="clientHome.links.logout">Logout</a>
+            <a href="#" onclick="logout()" class="logout-link"  data-i18n="clientHome.links.logout">Logout</a>
         </div>
     </div>
 

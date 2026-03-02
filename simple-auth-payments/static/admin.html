@@ -174,6 +174,23 @@
             <div class="section">
                 <h2>Lead Management</h2>
                 
+                <!-- CSV Import Section -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                    <h3 style="margin: 0 0 16px 0; color: #2E4275; font-size: 18px;">📤 Import Leads from CSV</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                        <button onclick="downloadCSVTemplate()" class="btn-small" style="background: #17a2b8; color: white; padding: 10px;">
+                            📄 Download Template
+                        </button>
+                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCSVUpload(event)">
+                        <button onclick="document.getElementById('csvFileInput').click()" class="btn-small btn-success" style="padding: 10px;">
+                            📤 Upload CSV File
+                        </button>
+                        <button onclick="showImportHelp()" class="btn-small btn-warning" style="padding: 10px;">
+                            ❓ Import Help
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Filters Section -->
                 <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
                     <h3 style="margin: 0 0 12px 0; color: #2E4275; font-size: 16px;">Filters</h3>
@@ -285,13 +302,32 @@
                 
                 <!-- Backup Actions -->
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-                    <h3 style="margin: 0 0 16px 0; color: #2E4275; font-size: 18px;">Create New Backup</h3>
-                    <button onclick="createBackup()" class="btn-primary btn-small" style="padding: 10px 20px; font-size: 14px;">
-                        📦 Create Backup Now
-                    </button>
-                    <p style="margin: 12px 0 0 0; font-size: 13px; color: #666;">
-                        Creates a timestamped backup of the current database. Old backups are automatically cleaned up (keeps last 10).
-                    </p>
+                    <h3 style="margin: 0 0 16px 0; color: #2E4275; font-size: 18px;">Backup Actions</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Create Backup -->
+                        <div>
+                            <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #333;">Create New Backup</h4>
+                            <button onclick="createBackup()" class="btn-primary btn-small" style="padding: 10px 20px; font-size: 14px; width: 100%;">
+                                📦 Create Backup Now
+                            </button>
+                            <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">
+                                Creates a timestamped backup of current database
+                            </p>
+                        </div>
+                        
+                        <!-- Upload Backup -->
+                        <div>
+                            <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #333;">Upload Backup</h4>
+                            <input type="file" id="backupFileInput" accept=".db" style="display: none;" onchange="handleBackupUpload(event)">
+                            <button onclick="document.getElementById('backupFileInput').click()" class="btn-success btn-small" style="padding: 10px 20px; font-size: 14px; width: 100%;">
+                                📤 Upload Backup File
+                            </button>
+                            <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">
+                                Upload .db file from local machine (max 50MB)
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Backup List -->
@@ -2179,11 +2215,14 @@
                         return;
                     }
                     
-                    let html = '<table style="width: 100%;"><thead><tr><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Filename</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Date</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Size</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Actions</th></tr></thead><tbody>';
+                    let html = '<table style="width: 100%;"><thead><tr><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Filename</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Date</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Size</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Status</th><th style="padding: 12px; text-align: left; background: #f8f9fa; font-weight: 700;">Actions</th></tr></thead><tbody>';
                     
                     data.backups.forEach((backup, index) => {
                         const sizeKB = (backup.size_bytes / 1024).toFixed(2);
                         const isLatest = index === 0;
+                        const statusBadge = backup.validated && backup.compatible 
+                            ? '<span class="badge badge-success">✓ Valid</span>'
+                            : '<span class="badge badge-warning">? Unknown</span>';
                         
                         html += `
                             <tr style="border-bottom: 1px solid #eee;">
@@ -2193,7 +2232,11 @@
                                 </td>
                                 <td style="padding: 12px;">${backup.date}</td>
                                 <td style="padding: 12px;">${sizeKB} KB</td>
+                                <td style="padding: 12px;">${statusBadge}</td>
                                 <td style="padding: 12px;">
+                                    <button onclick="validateBackup('${backup.filename}')" class="btn-small" style="background: #17a2b8; color: white;">
+                                        🔍 Validate
+                                    </button>
                                     <button onclick="restoreBackup('${backup.filename}')" class="btn-small btn-warning">
                                         🔄 Restore
                                     </button>
@@ -2244,6 +2287,118 @@
             }
         }
 
+        // ============================================================================
+        // BACKUP UPLOAD FUNCTIONS
+        // ============================================================================
+
+        async function validateBackup(filename) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/backups/validate/${filename}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    let message = `Backup Validation Results:\n\n`;
+                    message += `Filename: ${filename}\n`;
+                    message += `Valid: ${data.valid ? '✓ Yes' : '✗ No'}\n`;
+                    message += `Compatible: ${data.compatible ? '✓ Yes' : '✗ No'}\n\n`;
+                    message += `Tables found: ${data.tables_found.length}\n`;
+                    message += `- ${data.tables_found.join('\n- ')}\n`;
+                    
+                    if (data.missing_tables && data.missing_tables.length > 0) {
+                        message += `\n⚠️ Missing tables:\n- ${data.missing_tables.join('\n- ')}`;
+                    }
+                    
+                    if (data.info && data.info.tables) {
+                        message += `\n\nRow counts:\n`;
+                        for (const [table, count] of Object.entries(data.info.tables)) {
+                            message += `- ${table}: ${count} rows\n`;
+                        }
+                    }
+                    
+                    alert(message);
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Validation failed: ${error.detail}`);
+                }
+            } catch (error) {
+                alert(`❌ Error validating backup: ${error.message}`);
+            }
+        }
+
+        async function handleBackupUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file
+            if (!file.name.endsWith('.db')) {
+                alert('❌ Only .db files are allowed');
+                return;
+            }
+            
+            if (file.size > 50 * 1024 * 1024) {
+                alert('❌ File too large (max 50MB)');
+                return;
+            }
+            
+            // Ask for custom name
+            const customName = prompt('Enter a name for this backup (optional):', file.name.replace('.db', ''));
+            
+            // Upload
+            const formData = new FormData();
+            formData.append('file', file);
+            if (customName) {
+                formData.append('name', customName);
+            }
+            
+            try {
+                const uploadBtn = event.target.previousElementSibling;
+                if (uploadBtn) uploadBtn.disabled = true;
+                
+                const response = await fetch(`${API_BASE_URL}/admin/backups/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const validation = data.validation;
+                    
+                    let message = `✅ Backup uploaded successfully!\n\n`;
+                    message += `Filename: ${data.filename}\n`;
+                    message += `Size: ${(data.size_bytes / 1024).toFixed(2)} KB\n\n`;
+                    message += `Validation:\n`;
+                    message += `- Valid: ${validation.valid ? '✓' : '✗'}\n`;
+                    message += `- Compatible: ${validation.compatible ? '✓' : '✗'}\n`;
+                    message += `- Tables found: ${validation.tables_found.length}\n`;
+                    
+                    if (validation.missing_tables && validation.missing_tables.length > 0) {
+                        message += `\n⚠️ Missing tables: ${validation.missing_tables.join(', ')}`;
+                    }
+                    
+                    alert(message);
+                    loadBackups();
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Upload failed: ${error.detail}`);
+                }
+            } catch (error) {
+                alert(`❌ Error uploading backup: ${error.message}`);
+            } finally {
+                // Reset file input
+                event.target.value = '';
+                const uploadBtn = event.target.previousElementSibling;
+                if (uploadBtn) uploadBtn.disabled = false;
+            }
+        }
+
         // Load backups when backup tab is opened
         document.addEventListener('DOMContentLoaded', function() {
             const backupTab = document.querySelector('.tab[onclick*="backup"]');
@@ -2253,6 +2408,250 @@
                 });
             }
         });
+
+        // ============================================================================
+        // CSV IMPORT FUNCTIONS
+        // ============================================================================
+
+        function downloadCSVTemplate() {
+            window.location.href = `${API_BASE_URL}/admin/leads/import/template`;
+        }
+
+        function showImportHelp() {
+            alert(`CSV Import Help:\n\nRequired columns:\n- first_name\n- last_name\n- email\n- phone\n- country_code\n\nOptional columns:\n- country\n- business_name\n- num_locations\n- referral_source\n- status\n\nTips:\n- Download template for correct format\n- Max file size: 10MB\n- Use UTF-8 encoding\n- System detects duplicates by email or phone`);
+        }
+
+        async function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.name.endsWith('.csv')) {
+                alert('❌ Only .csv files allowed');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                alert('❌ File too large (max 10MB)');
+                return;
+            }
+            
+            // Validate CSV
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/leads/import/validate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showCSVValidationResults(data, file);
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Validation failed: ${error.detail}`);
+                }
+            } catch (error) {
+                alert(`❌ Error validating CSV: ${error.message}`);
+            } finally {
+                event.target.value = '';
+            }
+        }
+
+        function showCSVValidationResults(data, file) {
+            const modal = document.getElementById('csvImportModal');
+            const content = document.getElementById('csvImportContent');
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #2E4275; margin-bottom: 12px;">Validation Results</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #2E4275;">${data.total_rows}</div>
+                            <div style="font-size: 12px; color: #666;">Total Rows</div>
+                        </div>
+                        <div style="background: #d4edda; padding: 12px; border-radius: 6px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #155724;">${data.valid_rows}</div>
+                            <div style="font-size: 12px; color: #155724;">Valid Rows</div>
+                        </div>
+                        <div style="background: #f8d7da; padding: 12px; border-radius: 6px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; color: #721c24;">${data.invalid_rows}</div>
+                            <div style="font-size: 12px; color: #721c24;">Invalid Rows</div>
+                        </div>
+                    </div>
+            `;
+            
+            // Show errors if any
+            if (data.errors && data.errors.length > 0) {
+                html += `
+                    <div style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                        <strong style="color: #721c24;">❌ Errors Found:</strong>
+                        <ul style="margin: 8px 0 0 20px; color: #721c24;">
+                            ${data.errors.slice(0, 5).map(e => `<li>Row ${e.row}: ${e.error}</li>`).join('')}
+                            ${data.errors.length > 5 ? `<li>... and ${data.errors.length - 5} more errors</li>` : ''}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Show duplicates if any
+            if (data.duplicates && data.duplicates.count > 0) {
+                html += `
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                        <strong style="color: #856404;">⚠️ Duplicates Found: ${data.duplicates.count}</strong>
+                        <p style="margin: 8px 0; color: #856404; font-size: 13px;">Choose how to handle duplicate leads:</p>
+                        <div style="margin: 12px 0;">
+                            <label style="display: block; margin-bottom: 8px; cursor: pointer;">
+                                <input type="radio" name="duplicateAction" value="skip" checked style="margin-right: 8px;">
+                                <strong>Skip duplicates</strong> - Keep existing data (recommended)
+                            </label>
+                            <label style="display: block; margin-bottom: 8px; cursor: pointer;">
+                                <input type="radio" name="duplicateAction" value="overwrite" style="margin-right: 8px;">
+                                <strong>Overwrite existing</strong> - Update with new data
+                            </label>
+                            <label style="display: block; cursor: pointer;">
+                                <input type="radio" name="duplicateAction" value="import_all" style="margin-right: 8px;">
+                                <strong>Import all</strong> - Create new entries (allow duplicates)
+                            </label>
+                        </div>
+                        <details style="margin-top: 12px;">
+                            <summary style="cursor: pointer; color: #856404; font-weight: 600;">View duplicate details</summary>
+                            <ul style="margin: 8px 0 0 20px; font-size: 13px;">
+                                ${data.duplicates.duplicates.slice(0, 10).map(d => 
+                                    `<li>Row ${d.row}: ${d.new_name} (matches existing: ${d.existing_name} by ${d.match_type})</li>`
+                                ).join('')}
+                                ${data.duplicates.duplicates.length > 10 ? `<li>... and ${data.duplicates.duplicates.length - 10} more</li>` : ''}
+                            </ul>
+                        </details>
+                    </div>
+                `;
+            }
+            
+            // Show preview
+            if (data.preview && data.preview.length > 0) {
+                html += `
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="color: #2E4275; margin-bottom: 8px;">Preview (first 10 rows):</h4>
+                        <div style="overflow-x: auto; max-height: 200px; border: 1px solid #ddd; border-radius: 6px;">
+                            <table style="width: 100%; font-size: 12px;">
+                                <thead style="background: #f8f9fa; position: sticky; top: 0;">
+                                    <tr>
+                                        <th style="padding: 8px; text-align: left;">Name</th>
+                                        <th style="padding: 8px; text-align: left;">Email</th>
+                                        <th style="padding: 8px; text-align: left;">Phone</th>
+                                        <th style="padding: 8px; text-align: left;">Business</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.preview.map(p => `
+                                        <tr style="border-bottom: 1px solid #eee;">
+                                            <td style="padding: 8px;">${p.first_name} ${p.last_name}</td>
+                                            <td style="padding: 8px;">${p.email}</td>
+                                            <td style="padding: 8px;">${p.country_code} ${p.phone}</td>
+                                            <td style="padding: 8px;">${p.business_name || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Action buttons
+            html += `
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button onclick="closeCSVImportModal()" class="btn-small" style="background: #6c757d; color: white; padding: 10px 20px;">
+                        Cancel
+                    </button>
+                    <button onclick="executeCSVImport('${file.name}')" class="btn-small btn-success" style="padding: 10px 20px;" ${data.valid_rows === 0 ? 'disabled' : ''}>
+                        Import ${data.valid_rows} Leads
+                    </button>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            modal.style.display = 'block';
+            
+            // Store file for later
+            window.csvFileToImport = file;
+        }
+
+        async function executeCSVImport(filename) {
+            const duplicateAction = document.querySelector('input[name="duplicateAction"]:checked')?.value || 'skip';
+            const file = window.csvFileToImport;
+            
+            if (!file) {
+                alert('❌ File not found. Please upload again.');
+                return;
+            }
+            
+            if (!confirm(`Import leads with duplicate action: ${duplicateAction}?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('duplicate_action', duplicateAction);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/leads/import/execute?duplicate_action=${duplicateAction}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const results = data.results;
+                    
+                    let message = `✅ Import Complete!\n\n`;
+                    message += `Total processed: ${results.total_processed}\n`;
+                    message += `Successfully imported: ${results.imported}\n`;
+                    message += `Skipped (duplicates): ${results.skipped}\n`;
+                    message += `Failed: ${results.failed}\n`;
+                    
+                    if (results.failed_rows && results.failed_rows.length > 0) {
+                        message += `\nFailed rows:\n`;
+                        results.failed_rows.slice(0, 5).forEach(f => {
+                            message += `- Row ${f.row}: ${f.error}\n`;
+                        });
+                    }
+                    
+                    alert(message);
+                    closeCSVImportModal();
+                    loadContacts(); // Reload leads table
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Import failed: ${error.detail}`);
+                }
+            } catch (error) {
+                alert(`❌ Error importing CSV: ${error.message}`);
+            }
+        }
+
+        function closeCSVImportModal() {
+            document.getElementById('csvImportModal').style.display = 'none';
+            window.csvFileToImport = null;
+        }
     </script>
+    
+    <!-- CSV Import Modal -->
+    <div id="csvImportModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Import Leads from CSV</h2>
+                <span class="close" onclick="closeCSVImportModal()">&times;</span>
+            </div>
+            <div id="csvImportContent"></div>
+        </div>
+    </div>
 </body>
 </html>
