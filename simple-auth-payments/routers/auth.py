@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
-from utils.security import hash_password, verify_password, create_access_token, decode_access_token
+from utils.security import hash_password, verify_password, verify_and_update_password, create_access_token, decode_access_token
 from schemas import UserCreate, UserResponse, Token, UserLogin
 import models
 
@@ -156,12 +156,29 @@ def login(request: Request, response: Response, form_data: OAuth2PasswordRequest
     # Find user by email (username field in OAuth2 form)
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
     
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
+    # Verify password and check if hash needs upgrade
+    is_correct, new_hash = verify_and_update_password(form_data.password, user.hashed_password)
+    
+    if not is_correct:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # If password hash needs upgrade, update it automatically
+    if new_hash is not None:
+        user.hashed_password = new_hash
+        db.commit()
+        # Log for debugging (optional)
+        print(f"Password hash upgraded for user: {user.email}")
     
     if not user.is_active:
         raise HTTPException(
