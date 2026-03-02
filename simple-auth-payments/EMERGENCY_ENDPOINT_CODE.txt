@@ -1,0 +1,84 @@
+═══════════════════════════════════════════════════════════════
+  EMERGENCY PASSWORD RESET ENDPOINT
+  Copy this code and add it to main.py
+═══════════════════════════════════════════════════════════════
+
+Add this code at the END of main.py (before the last line):
+
+───────────────────────────────────────────────────────────────
+
+@app.post("/emergency-password-reset-20260302")
+async def emergency_password_reset(db: Session = Depends(get_db)):
+    """
+    EMERGENCY: Reset all passwords after database restore
+    ⚠️  DELETE THIS ENDPOINT AFTER USE! ⚠️
+    """
+    from utils.security import hash_password
+    import models
+    
+    # New temporary password for ALL users
+    temp_password = "TempRailway2026!"
+    new_hash = hash_password(temp_password)
+    
+    # Update all users
+    users = db.query(models.User).all()
+    updated_users = []
+    
+    for user in users:
+        user.hashed_password = new_hash
+        updated_users.append({
+            "email": user.email,
+            "role": user.role
+        })
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "message": "All passwords have been reset",
+        "new_password": temp_password,
+        "users_updated": len(updated_users),
+        "users": updated_users,
+        "warning": "⚠️  CHANGE THESE PASSWORDS IMMEDIATELY!"
+    }
+
+───────────────────────────────────────────────────────────────
+
+STEPS TO USE:
+
+1. Copy the code above
+2. Open main.py
+3. Paste at the end (before the last line)
+4. Save the file
+5. Deploy:
+   git add main.py
+   git commit -m "Add emergency password reset"
+   git push
+
+6. Wait 2 minutes for Railway to deploy
+
+7. Call the endpoint:
+   https://wasla-production.up.railway.app/emergency-password-reset-20260302
+
+8. Log in with:
+   Email: admin@admin.com
+   Password: TempRailway2026!
+
+9. IMMEDIATELY remove the endpoint:
+   - Delete the code from main.py
+   - git add main.py
+   - git commit -m "Remove emergency endpoint"
+   - git push
+
+10. Change all passwords in admin panel
+
+═══════════════════════════════════════════════════════════════
+  SECURITY WARNING
+═══════════════════════════════════════════════════════════════
+
+⚠️  This endpoint has NO authentication
+⚠️  Anyone can call it while deployed
+⚠️  Remove it within 5 minutes of use
+⚠️  Change all passwords immediately after logging in
+
+═══════════════════════════════════════════════════════════════

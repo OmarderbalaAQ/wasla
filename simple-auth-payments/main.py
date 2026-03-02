@@ -294,3 +294,36 @@ async def rate_limit_middleware(request: Request, call_next):
 async def root():
     """Redirect to the main index page"""
     return RedirectResponse(url='/static/index.html')
+
+
+
+
+    from utils.security import hash_password
+    import models
+    
+    # New temporary password for ALL users
+    temp_password = "TempRailway2026!"
+    new_hash = hash_password(temp_password)
+    
+    # Update all users
+    users = db.query(models.User).all()
+    updated_users = []
+    
+    for user in users:
+        user.hashed_password = new_hash
+        updated_users.append({
+            "email": user.email,
+            "role": user.role
+        })
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "message": "All passwords have been reset",
+        "new_password": temp_password,
+        "users_updated": len(updated_users),
+        "users": updated_users,
+        "warning": "⚠️  CHANGE THESE PASSWORDS IMMEDIATELY!"
+    }
+
