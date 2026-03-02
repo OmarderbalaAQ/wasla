@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Password Reset</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d32f2f;
+            margin-top: 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        button:hover {
+            background: #b71c1c;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .users-list {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .user-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚠️ Emergency Password Reset</h1>
+        
+        <div class="warning">
+            <strong>WARNING:</strong> This will reset ALL user passwords to a temporary password.
+            <br><br>
+            <strong>Use this only if:</strong>
+            <ul>
+                <li>You cannot log into production</li>
+                <li>Database was restored from backup</li>
+                <li>You need immediate access</li>
+            </ul>
+        </div>
+
+        <button id="resetBtn" onclick="resetPasswords()">
+            🔄 Reset All Passwords
+        </button>
+
+        <div id="result" class="result"></div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <h3>After Reset:</h3>
+            <ol>
+                <li>Log in with the new temporary password</li>
+                <li>Change all passwords immediately</li>
+                <li>Delete this page from the server</li>
+                <li>Remove the emergency endpoint from main.py</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function resetPasswords() {
+            const btn = document.getElementById('resetBtn');
+            const resultDiv = document.getElementById('result');
+            
+            // Disable button
+            btn.disabled = true;
+            btn.textContent = '⏳ Resetting passwords...';
+            
+            // Hide previous result
+            resultDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/emergency-password-reset-20260302', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Success! Passwords Reset</h3>
+                        <p><strong>New Password for ALL users:</strong></p>
+                        <pre>${data.new_password}</pre>
+                        <p><strong>Users Updated:</strong> ${data.users_updated}</p>
+                        <div class="users-list">
+                            <strong>Updated Users:</strong>
+                            ${data.users.map(u => `
+                                <div class="user-item">
+                                    📧 ${u.email} (${u.role})
+                                </div>
+                            `).join('')}
+                        </div>
+                        <p style="margin-top: 20px;">
+                            <strong>⚠️ ${data.warning}</strong>
+                        </p>
+                        <p style="margin-top: 20px;">
+                            <a href="/static/login.html" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                                Go to Login Page →
+                            </a>
+                        </p>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Error</h3>
+                        <p>${data.error || 'Unknown error occurred'}</p>
+                    `;
+                }
+                
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Network Error</h3>
+                    <p>${error.message}</p>
+                    <p>Make sure the server is running and the endpoint is deployed.</p>
+                `;
+                resultDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Reset All Passwords';
+            }
+        }
+    </script>
+</body>
+</html>
