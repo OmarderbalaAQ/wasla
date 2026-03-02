@@ -138,48 +138,34 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.on_event("startup")
 def seed_bundles():
     """Seed initial bundles and default admin user if they don't exist"""
-    from utils.backup import BackupManager
     from utils.security import hash_password
     
-    # Check database and restore if empty
-    backup_manager = BackupManager()
-    restore_status = backup_manager.check_and_restore_if_empty()
+    print("=" * 70)
+    print("STARTUP: Initializing database...")
+    print("=" * 70)
     
-    # Log restore status
-    if restore_status["action"] == "restored":
-        print(f"✓ Database restored from backup")
-        print(f"  Reason: {restore_status['reason']}")
-        print(f"  Backup: {restore_status.get('backup_used', 'N/A')}")
-        print(f"  Details: {restore_status['details']}")
-        # After successful restore, no need to seed
-        return
-    elif restore_status["action"] == "failed":
-        print(f"⚠ Database restore failed: {restore_status['details']}")
-        print(f"  Will create new database with default data...")
-    elif restore_status["action"] == "none":
-        if restore_status["reason"] == "database_ok":
-            print(f"✓ Database OK: {restore_status['details']}")
-            # Database is fine, but still check if we need to seed bundles
-        else:
-            print(f"⚠ No backups available: {restore_status['details']}")
-            print(f"  Will create new database with default data...")
-    
-    # Seed default data if needed
+    # NO AUTO-RESTORE - Only create default data if needed
     db = SessionLocal()
     try:
-        # Seed default admin user if no users exist
-        user_count = db.query(models.User).count()
-        if user_count == 0:
+        # Always ensure default admin exists
+        admin = db.query(models.User).filter(models.User.email == "admin@admin.com").first()
+        if not admin:
             default_admin = models.User(
                 email="admin@admin.com",
                 hashed_password=hash_password("admin123"),
+                full_name="System Administrator",
                 role="admin",
-                is_active=True
+                is_active=True,
+                is_verified=True
             )
             db.add(default_admin)
             db.commit()
-            print("✓ Created default admin user: admin@admin.com / admin123")
-            print("  ⚠ IMPORTANT: Change this password in production!")
+            print("✓ Created default admin user")
+            print("  Email: admin@admin.com")
+            print("  Password: admin123")
+            print("  ⚠ CHANGE THIS PASSWORD AFTER FIRST LOGIN!")
+        else:
+            print(f"✓ Admin user exists: {admin.email}")
         
         # Seed bundles if they don't exist
         bundle_count = db.query(models.Bundle).count()
@@ -200,13 +186,17 @@ def seed_bundles():
             db.add(pro_bundle)
             db.commit()
             print("✓ Seeded initial bundles")
-            
-            # Create a backup after seeding
-            try:
-                backup_result = backup_manager.create_backup()
-                print(f"✓ Created initial backup: {backup_result['filename']}")
-            except Exception as e:
-                print(f"⚠ Failed to create backup: {e}")
+        else:
+            print(f"✓ Bundles exist: {bundle_count} bundles")
+        
+        print("=" * 70)
+        print("✓ Database initialization complete")
+        print("=" * 70)
+        
+    except Exception as e:
+        print(f"✗ Error during startup: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         db.close()
 
@@ -294,50 +284,4 @@ async def rate_limit_middleware(request: Request, call_next):
 async def root():
     """Redirect to the main index page"""
     return RedirectResponse(url='/static/index.html')
-
-
-@app.post("/emergency-password-reset-20260302")
-async def emergency_password_reset():
-    """
-    EMERGENCY: Reset all passwords after database restore
-    ⚠️  DELETE THIS ENDPOINT AFTER USE! ⚠️
-    """
-    from utils.security import hash_password
-    import models
-    
-    db = SessionLocal()
-    try:
-        # New temporary password for ALL users
-        temp_password = "TempRailway2026!"
-        new_hash = hash_password(temp_password)
-        
-        # Update all users
-        users = db.query(models.User).all()
-        updated_users = []
-        
-        for user in users:
-            user.hashed_password = new_hash
-            updated_users.append({
-                "email": user.email,
-                "role": user.role
-            })
-        
-        db.commit()
-        
-        return {
-            "success": True,
-            "message": "All passwords have been reset",
-            "new_password": temp_password,
-            "users_updated": len(updated_users),
-            "users": updated_users,
-            "warning": "⚠️  CHANGE THESE PASSWORDS IMMEDIATELY!"
-        }
-    except Exception as e:
-        db.rollback()
-        return {
-            "success": False,
-            "error": str(e)
-        }
-    finally:
-        db.close()
 
