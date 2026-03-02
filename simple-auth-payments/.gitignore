@@ -144,11 +144,19 @@ quick_test_*.py
 migrate_*.py
 setup_*.py
 create_*.py
-restore_*.py
-backup_*.py
+restore_database.py
+backup_database.py
 
 # Keep essential setup scripts
 !setup_complete_system.py
+
+# Keep essential utils modules
+!utils/backup.py
+!utils/backup_validator.py
+!utils/csv_importer.py
+!utils/bundle_helpers.py
+!utils/security.py
+!utils/email.py
 
 # Batch Files (Windows specific)
 *.bat
